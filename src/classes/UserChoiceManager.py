@@ -23,9 +23,9 @@ class UserChoiceManager:
 
             print(f"  {option}")
     
-    def get_user_choice(self):
+    def get_user_choice(self, clear=True):
         while True:
-            self.display_options()
+            self.display_options(clear=clear)
             event = keyboard.read_event()
 
             if not event.event_type == keyboard.KEY_DOWN:
