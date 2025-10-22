@@ -38,7 +38,7 @@ def main() -> None:
                     print(colored("== Login Page ==\n", "cyan", attrs=["bold"]))
                     username, password = prompt_login()
 
-                    if not username in accounts:
+                    if username not in accounts:
                         print(colored("\nNo account found with that username.", "red"))
                         enter_to_continue()
                         continue 
