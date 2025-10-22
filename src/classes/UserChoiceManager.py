@@ -25,7 +25,7 @@ class UserChoiceManager:
 
     # The 'prompt' parameter is what will appear above the options
     # every re-rendering of the menu.
-    def __init__(self, options, prompt="Select an option:"):
+    def __init__(self, options=[], prompt="Select an option:"):
         self.options = options
         self.prompt = prompt
         self.current_index = 0 # Initial index is 0
