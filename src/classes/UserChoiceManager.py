@@ -3,6 +3,17 @@ import termcolor
 
 from utils.clear_console import clear_console
 
+class Option:
+    def __init__(self, label: str, index: int):
+        self.label = label
+        self.index = index 
+    
+    def __str__(self):
+        return self.label 
+    
+    def __int__(self):
+        return self.index
+
 class UserChoiceManager:
 
     # The 'prompt' parameter is what will appear above the options
@@ -42,7 +53,11 @@ class UserChoiceManager:
             raise IndexError("Selection index is out of range.")
         self.current_index = selection_index
 
-    def get_user_choice(self, clear=True, options=None, prompt=None):
+
+    # NOTE **IMPORTANT**: get_user_choice will return an OPTION object (see the class above). 
+    # To access the index, use int(option),
+    # to access the label/text use str(option).
+    def get_user_choice(self, clear=True, options=None, prompt=None) -> Option:
 
         # NOTE: The selected index will NOT reset when options are changed. Call the method "reset_selection()" to reset it.
 
@@ -70,4 +85,4 @@ class UserChoiceManager:
                 if self.current_index < 0 or self.current_index >= len(self.options):
                     raise IndexError("Current index is out of range.")
 
-                return self.current_index
+                return Option(index=self.current_index, label=self.options[self.current_index])
