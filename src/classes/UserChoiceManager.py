@@ -5,14 +5,14 @@ from utils.clear_console import clear_console
 
 class Option:
     def __init__(self, label: str, index: int):
-        self.label = label
-        self.index = index 
-    
-    def index(self):
-        return self.index 
+        self._label = label
+        self._index = index 
 
     def label(self):
-        return self.label
+        return self._label
+    
+    def index(self):
+        return self._index
     
 
     def __str__(self):
