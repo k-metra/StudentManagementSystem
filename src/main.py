@@ -11,11 +11,12 @@ def main():
 
     choice = UCM.get_user_choice()
 
-    if choice == 1:
-        print(colored("Exiting the program. Goodbye!", "yellow"))
-        return
-    elif choice == 2:
-        print(colored("Login functionality is not yet implemented.", "red"))
-        return
+    match str(choice):
+        case "Exit":
+            print(colored("Exiting the program. Goodbye!", "yellow"))
+            return
+        case "Login":
+            print(colored("Login functionality is not yet implemented.", "red"))
+            return
 
 main()
