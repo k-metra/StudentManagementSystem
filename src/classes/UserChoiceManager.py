@@ -8,6 +8,13 @@ class Option:
         self.label = label
         self.index = index 
     
+    def index(self):
+        return self.index 
+
+    def label(self):
+        return self.label
+    
+
     def __str__(self):
         return self.label 
     
