@@ -52,6 +52,7 @@ class UserChoiceManager:
     def set_options(self, new_options=[]):
         if len(new_options) <= 1:
             raise ValueError("Options list cannot have less than two options.")
+        self.reset_selection()
         self.options = new_options
     
     def reset_selection(self):
@@ -67,8 +68,6 @@ class UserChoiceManager:
     # To access the index, use int(option),
     # to access the label/text use str(option).
     def get_user_choice(self, clear=True, options=None, prompt=None) -> Option:
-
-        # NOTE: The selected index will NOT reset when options are changed. Call the method "reset_selection()" to reset it.
 
         # Override options and prompt if provided
         # This allows the same UserChoiceManager to be re-used.
