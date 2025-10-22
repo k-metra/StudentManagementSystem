@@ -4,34 +4,32 @@ from utils.clear_console import clear_console
 from classes.UserChoiceManager import UserChoiceManager
 from utils.options import options
 from termcolor import colored
-from utils.login import access_file
+from utils.login import access_file, prompt_login, load_accounts
 
 
 def main():
+
     user_options = options("Login", "Exit")
     UCM = UserChoiceManager(user_options, prompt=colored("<== Student Records Management System ==>\n", "cyan", attrs=["bold"]))
     open_file = access_file("src/data/accounts.json")
-    choice = UCM.get_user_choice()
+    option = UCM.get_user_choice()
 
-<<<<<<< HEAD
-    match str(choice):
-        case "Exit":
-            print(colored("Exiting the program. Goodbye!", "yellow"))
-            return
-        case "Login":
-            print(colored("Login functionality is not yet implemented.", "red"))
-            return
-
-=======
-    if choice == 1:
+    if option.index == 1:
         print(colored("Exiting the program. Goodbye!", "yellow"))
-        
+
+
         return
-    elif choice == 0:
-        print(open_file)
+    elif option.index == 0:
+        clear_console()
+        print(colored("== Login Page ==\n", "cyan", attrs=["bold"]))
+        accounts = load_accounts("src/data/accounts.json")
+        username, password = prompt_login()
+
+        for acc in accounts:
+            if acc["username"] == username and acc["password"] == password:
+                print(colored(f"\nLogin successful! Welcome, {acc['role']}.", "green"))
+                return
         
-        print(colored("Login functionality is not yet implemented.", "red"))
-        
+        print(colored("\nInvalid username or password. Please try again.", "red"))
         return
->>>>>>> will(login_attempt)
 main()
