@@ -1,7 +1,9 @@
 import keyboard
 import termcolor
+import time 
 
 from utils.clear_console import clear_console
+from utils.misc import clear_input_buffer
 
 class Option:
     def __init__(self, label: str, index: int):
@@ -74,6 +76,9 @@ class UserChoiceManager:
         # options and prompts.
         self.prompt = prompt if prompt is not None else self.prompt
         self.options = options if options is not None else self.options
+
+        time.sleep(0.1)  # Small delay to ensure previous inputs are cleared
+        clear_input_buffer()
 
         while True:
             self.display_options(clear=clear)
