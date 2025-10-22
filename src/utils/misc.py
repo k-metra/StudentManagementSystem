@@ -12,4 +12,6 @@ def clear_input_buffer():
         sys.stdin.flush()
 
 def enter_to_continue():
-    input("Press enter to continue.")
+    clear_input_buffer()
+    input("Press Enter to continue...")
+    clear_input_buffer()
