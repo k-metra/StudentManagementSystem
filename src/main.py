@@ -7,7 +7,7 @@ from termcolor import colored
 from utils.login import prompt_login
 from utils.file import load_file
 
-def main():
+def main() -> None:
 
     # Fetch accounts on startup only once after startup for performance
     accounts = load_accounts()
@@ -17,23 +17,31 @@ def main():
 
     option = UCM.get_user_choice()
 
-    if option.index == 1:
-        print(colored("Exiting the program. Goodbye!", "yellow"))
+    match option.label():
+        case "Exit":
+            print(colored("Exiting the program. Goodbye!", "yellow"))
+            return 
+        case "Login":
+            clear_console()
+            print(colored("== Login Page ==\n", "cyan", attrs=["bold"]))
+            username, password = prompt_login()
 
 
-        return
-    elif option.index == 0:
-        clear_console()
-        print(colored("== Login Page ==\n", "cyan", attrs=["bold"]))
-        username, password = prompt_login()
-
-        for acc in accounts:
-            if acc["username"] == username and acc["password"] == password:
-                print(colored(f"\nLogin successful! Welcome, {acc['role']}.", "green"))
+            # Instead of running a loop, we just check once if the username exists and if the password matches.
+            if username not in accounts:
+                print(colored("\nNo account found with that username.", "red"))
                 return
+            
+            if accounts[username]["password"] != password:
+                print(colored("\nInvalid password. Please try again.", "red"))
+                return
+
+            print(colored(f"\nLogin successful! Welcome, {accounts[username]['role']}.", "green"))
+            return 
         
-        print(colored("\nInvalid username or password. Please try again.", "red"))
-        return
+        case _:
+            print(colored("An unknown error occurred.", "red"))
+            return
     
 def load_accounts():
     return load_file("src/data/accounts.json", key="accounts")
