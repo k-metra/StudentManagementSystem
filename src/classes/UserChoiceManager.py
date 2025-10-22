@@ -79,7 +79,7 @@ class UserChoiceManager:
             self.display_options(clear=clear)
             event = keyboard.read_event()
 
-            if not event.event_type == keyboard.KEY_DOWN:
+            if not event.event_type == keyboard.KEY_UP:
                 continue
 
             if event.name == "up" and self.current_index > 0:
