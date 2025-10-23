@@ -10,4 +10,5 @@ class Admin(Role):
             Permissions.VIEW_REPORTS,
             Permissions.CREATE_ACCOUNT,
             Permissions.EDIT_ACCOUNT,
+            Permissions.DELETE_ACCOUNT,
         ])
