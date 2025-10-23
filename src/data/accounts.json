@@ -5,7 +5,7 @@
             "role": "Admin"
         },
         "staff": {
-            "password": "staffgaming123",
+            "password": "staff123",
             "role": "Staff"
         }
     }
