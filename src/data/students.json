@@ -1,0 +1,32 @@
+{
+  "students": {
+    "0001-25": {
+      "first_name": "Alice",
+      "last_name": "Johnson",
+      "phone_number": "555-0101",
+      "year_level": 1,
+      "course": "Computer Science"
+    },
+    "0002-25": {
+      "first_name": "Bob",
+      "last_name": "Smith",
+      "phone_number": "555-0102",
+      "year_level": 3,
+      "course": "Business Administration"
+    },
+    "0003-25": {
+      "first_name": "Charlie",
+      "last_name": "Brown",
+      "phone_number": "555-0103",
+      "year_level": 2,
+      "course": "Mechanical Engineering"
+    },
+    "0004-24": {
+      "first_name": "Diana",
+      "last_name": "Prince",
+      "phone_number": "555-0104",
+      "year_level": 4,
+      "course": "Fine Arts"
+    }
+  }
+}
