@@ -2,18 +2,15 @@ from classes.AccountManager import AccountManager
 from classes.Account import Account 
 from enums.permissions import Permissions
 from roles import * # Import all roles
-from typing import Tuple
+from typing import Dict, Any, Optional, Tuple, List
 import json 
 
-class ManageStudentsController:
-   from classes.Account import Account
-from enums.permissions import Permissions
-from typing import Dict, Any, Optional
-import json
-
 class ManageStudentController:
-   class ManageStudentController:
-    # Changed to a students data file
+    """
+    Controller class to handle CRUD operations for student records.
+    Requires an Account object to check for necessary permissions before execution.
+    """
+
     DATA_FILE = "src/data/students.json"
 
     def __init__(self, current_account: Account):
@@ -29,6 +26,7 @@ class ManageStudentController:
         try:
             with open(self.DATA_FILE, "r", encoding="utf-8") as file:
                 data = json.load(file)
+                # Expects the data to be in the format: {"students": {...}}
                 return data.get("students", {})
         except FileNotFoundError:
             return {}
@@ -37,9 +35,9 @@ class ManageStudentController:
             return {}
 
     def save_students(self):
-         # Writes the current student records back to the JSON file.
+        """Writes the current student records back to the JSON file."""
         with open(self.DATA_FILE, "w", encoding="utf-8") as file:
-            # Write the data in the required format: {"students": {...}}
+            # Writes the data in the required format: {"students": {...}}
             json.dump({"students": self.students}, file, indent=4)
 
     # ---------------
@@ -58,9 +56,9 @@ class ManageStudentController:
         if student_id in self.students:
             return {"status": False, "error": f"Student with ID '{student_id}' already exists."}
         
-        # Basic data validation (you may want to add more robust checks)
+        # Basic data validation
         if not (first_name and last_name and student_id and isinstance(year_level, int)):
-             return {"status": False, "error": "Invalid data provided (e.g., missing name or year level not an integer)."}
+            return {"status": False, "error": "Invalid data provided (e.g., missing name or year level not an integer)."}
 
         self.students[student_id] = {
             "first_name": first_name,
