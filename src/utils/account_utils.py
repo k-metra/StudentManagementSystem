@@ -15,6 +15,8 @@ roles_registry = Role.registry
 global accounts
 accounts = None
 
+# This function has built-in validation for username, password, and (optionally) role so
+# you don't have to validate anywhere else. In order to load the account object, use load_account() after this.
 def get_account(username: str, password: str, role: str="") -> dict[str, str] | None:
     global accounts 
     if accounts is None:
@@ -35,6 +37,7 @@ def get_account(username: str, password: str, role: str="") -> dict[str, str] | 
 def load_accounts() -> dict[str, dict]:
     return load_file("src/data/accounts.json", key="accounts")
 
+# This function is only ran *after* validation. Pass in the data you get from get_account()
 def load_account(username: str, password: str, role: str) -> Account:
     if role not in roles_registry:
         raise ValueError(f"Role '{role}' does not exist.")
