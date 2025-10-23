@@ -14,82 +14,30 @@ from roles import * # Imports all the roles inside the roles package
 
 from enums.permissions import Permissions
 
+from screens import login_screen
+
 def main() -> None:
-    initial_options = options("Login", "Exit")
-
-    # Initialize managers
-    managers = {
-        "Account": AccountManager(),
-        "Choices": UserChoiceManager()
-    }
-
+    account_manager = AccountManager()
     current_account: Account | None = None
 
     while True:
-        # If user is logged out or not logged in
         if current_account is None:
-            managers.get("Choices").set_options(initial_options)
-            managers.get("Choices").set_prompt(colored("<== Student Management System ==>","cyan", attrs=["bold"]))
+            from screens import entry_screen
 
-            choice = managers.get("Choices").get_user_choice()
+            # "entry_screen" will either return:
+            # An account if the user logs in
+            # 'None' if the user chooses to exit the application
+            current_account = entry_screen(account_manager)
 
-            match choice.label():
-                case "Exit":
-                    print(colored("Exiting the program. Goodbye!", "yellow"))
-                    break
+            if current_account is None:
+                break
 
-                case "Login":
-                    clear_console()
-                    print(colored("== Login Page ==\n", "cyan", attrs=["bold"]))
-                    username, password = prompt_login()
-
-                    account = managers.get("Account").get_account(username=username, password=password)
-
-                    if account is None:
-                        print(colored("\nInvalid username or password. Please try again.", "red"))
-                        enter_to_continue()
-                        continue
-                    
-                    current_account = managers.get("Account").load_account(username=username, account_json=account)
-
-                    print(colored(f"\nLogin successful! Welcome, {current_account}.", "green"))
-                    enter_to_continue()
-                    continue
-
-        # If user is logged in
-        else:
-            managers.get("Choices").set_prompt(colored(f"<== Welcome, {current_account}! ==>","cyan", attrs=["bold"]))
-
-            # Build menu options based on user permissions
-            menu_options = [
-                "View Students",
-                "Add Student",
-                "Remove Student",
-            ]
-
-            # Add admin-only options if user has permission
-            if current_account.has_permission(Permissions.EDIT_ACCOUNT):
-                menu_options.append("Manage Accounts")
-
-            # Always add logout option at the end
-            menu_options.append("Logout")
-
-            menu = options(*menu_options)
-            managers.get("Choices").set_options(menu)
-            choice = managers.get("Choices").get_user_choice()
-
-            match choice.label():
-                case "Logout":
-                    print(colored(f"\nLogging out {current_account}...", "yellow"))
-                    current_account = None
-                    enter_to_continue()
-                    continue
-
-                case other_option:
-                    print(colored(f"\nYou selected: {other_option}", "green"))
-                    enter_to_continue()
-                    continue
-    
+            continue
+        
+        from screens import main_menu_screen
+        main_menu_screen(current_account)
+        current_account = None
 
 
 main()
+

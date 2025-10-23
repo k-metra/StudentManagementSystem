@@ -16,6 +16,10 @@ class AccountManager:
         
         self._role_registry = Role.registry
 
+    def refresh_accounts(self):
+        self._accounts = None 
+        self.load_accounts()
+
     def load_accounts(self) -> dict[str, dict]:
         if self._accounts is None:
             self._accounts = load_file("src/data/accounts.json", key="accounts")
