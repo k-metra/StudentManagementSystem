@@ -13,3 +13,6 @@ class Role():
 
     def has_permission(self, permission):
         return permission in self.permissions
+    
+    def __str__(self):
+        return self.name
