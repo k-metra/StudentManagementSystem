@@ -17,6 +17,10 @@ class ManageAccountsController:
     # Utility Helpers
     # ---------------
 
+    def refresh_accounts(self):
+        self.account_manager.refresh_accounts()
+        self.accounts = self.account_manager.load_accounts()
+
     # Writes the current account data back to the JSON file
     def save_accounts(self):
         with open(self.DATA_FILE, "w", encoding="utf-8") as file:
