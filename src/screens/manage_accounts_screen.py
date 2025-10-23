@@ -124,6 +124,12 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
                     match choice.label():
                         case "Change Password":
                             new_password = pwinput.pwinput("Enter new password: ")
+                            confirm_password = pwinput.pwinput("Re-enter new password: ")
+                            if new_password != confirm_password:
+                                print(colored("Passwords do not match.", "red"))
+                                enter_to_continue()
+                                continue
+
                             result = controller.update_account(username=selected_account.get("username"), password=new_password)
 
                             if result.get("status"):
