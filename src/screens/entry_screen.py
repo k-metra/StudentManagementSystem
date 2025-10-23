@@ -21,6 +21,10 @@ def entry_screen(account_manager: AccountManager) -> Account | None:
                 return
             case "Login":
                 from screens import login_screen
+
+                # Refresh account data in case of any changes
+                account_manager.refresh_accounts()
+
                 account: Account | None = login_screen(account_manager)
                 
                 if account is None: 
