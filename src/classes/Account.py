@@ -9,5 +9,8 @@ class Account():
     def has_permission(self, permission):
         return (permission in self.role.permissions)
     
+    def get_permissions(self):
+        return self.role.permissions
+    
     def __str__(self):
         return self.username
