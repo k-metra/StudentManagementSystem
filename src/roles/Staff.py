@@ -1,9 +1,10 @@
-from classes import Role
+from classes.Role import Role
 from enums.permissions import Permissions
 
 class Staff(Role):
     def __init__(self):
-        self.permissions = [
+        super().__init__(permissions=[
+            Permissions.VIEW_STUDENT,
             Permissions.ADD_STUDENT,
             Permissions.EDIT_STUDENT,
-        ]
+        ])
