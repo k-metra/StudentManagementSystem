@@ -12,6 +12,8 @@ from classes.Account import Account
 import utils.account_utils as account_utils
 from roles import * # Imports all the roles inside the roles package
 
+from enums.permissions import Permissions
+
 def main() -> None:
     initial_options = options("Login", "Exit")
     UCM = UserChoiceManager()
@@ -52,12 +54,22 @@ def main() -> None:
         # If user is logged in
         else:
             UCM.set_prompt(colored(f"<== Welcome, {current_account}! ==>","cyan", attrs=["bold"]))
-            menu = options(
+
+            # Build menu options based on user permissions
+            menu_options = [
                 "View Students",
                 "Add Student",
                 "Remove Student",
-                "Logout"
-            )
+            ]
+
+            # Add admin-only options if user has permission
+            if current_account.has_permission(Permissions.EDIT_ACCOUNT):
+                menu_options.append("Manage Accounts")
+
+            # Always add logout option at the end
+            menu_options.append("Logout")
+
+            menu = options(*menu_options)
             UCM.set_options(menu)
             choice = UCM.get_user_choice()
 
