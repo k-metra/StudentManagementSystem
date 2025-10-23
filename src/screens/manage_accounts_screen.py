@@ -28,8 +28,6 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
         if len(controller.get_all_accounts()) == len(user_accounts):
             return
 
-        controller.refresh_accounts()
-
         for user_account, data in controller.get_all_accounts().items():
             user_accounts.append(
                 {
