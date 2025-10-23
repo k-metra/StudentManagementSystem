@@ -152,6 +152,7 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
                                 else:
                                     print(colored(result.get("error"), "red"))
                                 enter_to_continue()
+                                break
 
                         case "Back to Account List":
                             break
