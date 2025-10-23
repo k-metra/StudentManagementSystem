@@ -1,3 +1,4 @@
+from classes import AccountManager
 from utils.options import options 
 from utils.clear_console import clear_console
 from termcolor import colored
@@ -6,7 +7,7 @@ from enums.permissions import Permissions
 from utils.misc import enter_to_continue
 from classes.Account import Account
 
-def main_menu_screen(current_account: Account) -> None:
+def main_menu_screen(current_account: Account, account_manager: AccountManager) -> None:
     manager = UserChoiceManager()
 
     while True:
@@ -43,6 +44,9 @@ def main_menu_screen(current_account: Account) -> None:
 
                 from screens import manage_accounts_screen
                 manage_accounts_screen(current_account, manager)
+            case "Settings":
+                from screens import settings_screen
+                settings_screen(current_account, manager, account_manager)
             case other:
                 print(f"You selected: {other}")
                 enter_to_continue()
