@@ -2,16 +2,20 @@ from classes.AccountManager import AccountManager
 from classes.Account import Account 
 from enums.permissions import Permissions
 from roles import * # Import all roles
-from typing import Tuple
+from dotenv import load_dotenv
+import os
 import json 
 
 class ManageAccountsController:
-    DATA_FILE = "src/data/accounts.json"
 
     def __init__(self, current_account: Account):
         self.account_manager = AccountManager()
         self.accounts = self.account_manager.load_accounts()
         self.current_account = current_account
+
+        load_dotenv()
+
+        self.DATA_FILE = os.getenv("ACCOUNTS_DATA_FILE")
 
     # ---------------
     # Utility Helpers
