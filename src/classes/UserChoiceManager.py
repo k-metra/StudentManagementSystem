@@ -96,4 +96,7 @@ class UserChoiceManager:
                 if self.current_index < 0 or self.current_index >= len(self.options):
                     raise IndexError("Current index is out of range.")
 
+                # Small delay to ensure enter keypress doesn't affect next input
+                clear_input_buffer()
+                time.sleep(.1)
                 return Option(index=self.current_index, label=self.options[self.current_index])
