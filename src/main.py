@@ -9,12 +9,10 @@ from utils.file import load_file
 from utils.misc import enter_to_continue
 
 from classes.Account import Account
+import utils.account_utils as account_utils
+from roles import * # Imports all the roles inside the roles package
 
 def main() -> None:
-
-    # Fetch accounts on startup only once after startup for performance
-    accounts = load_accounts()
-
     initial_options = options("Login", "Exit")
     UCM = UserChoiceManager()
 
@@ -38,17 +36,14 @@ def main() -> None:
                     print(colored("== Login Page ==\n", "cyan", attrs=["bold"]))
                     username, password = prompt_login()
 
-                    if username not in accounts:
-                        print(colored("\nNo account found with that username.", "red"))
-                        enter_to_continue()
-                        continue 
+                    account = account_utils.get_account(username=username, password=password)
 
-                    if accounts[username]["password"] != password:
-                        print(colored("\nInvalid password. Please try again.", "red"))
+                    if account is None:
+                        print(colored("\nInvalid username or password. Please try again.", "red"))
                         enter_to_continue()
                         continue
                     
-                    current_account = Account(username=username, password=password, role=accounts[username]["role"])
+                    current_account = account_utils.load_account(username=username, password=account.get("password"), role=account.get("role"))
 
                     print(colored(f"\nLogin successful! Welcome, {current_account}.", "green"))
                     enter_to_continue()
@@ -78,7 +73,6 @@ def main() -> None:
                     enter_to_continue()
                     continue
     
-def load_accounts():
-    return load_file("src/data/accounts.json", key="accounts")
+
 
 main()
