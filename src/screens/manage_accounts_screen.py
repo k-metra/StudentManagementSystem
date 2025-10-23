@@ -123,7 +123,7 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
 
                     match choice.label():
                         case "Change Password":
-                            new_password = input("Enter new password: ")
+                            new_password = pwinput.pwinput("Enter new password: ")
                             result = controller.update_account(username=selected_account.get("username"), password=new_password)
 
                             if result.get("status"):
