@@ -7,6 +7,7 @@ from classes.UserChoiceManager import UserChoiceManager
 from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
 from termcolor import colored
+from typing import Dict, Any, List, TypedDict, cast
 import pwinput
 
 import time

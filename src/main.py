@@ -28,7 +28,7 @@ def main() -> None:
             # An account if the user logs in
             # 'None' if the user chooses to exit the application
             current_account = entry_screen(account_manager)
-
+    
             if current_account is None:
                 break
 
