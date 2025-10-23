@@ -72,15 +72,16 @@ class ManageAccountsController:
         if not self.current_account.has_permission(Permissions.EDIT_ACCOUNT):
             return {"status": False, "error":"You do not have permission to edit accounts."}
         
-        if role_name:
-            if role_name not in self.account_manager._role_registry:
-                return {"status": False, "error":f"Role {role_name} does not exist."}
-            self.accounts[username]["role"] = role_name
-        
         if password:
             if len(password) < 6:
                 return {"status": False, "error":"Password must be at least 6 characters long."}
             self.accounts[username]["password"] = password 
+        
+        if role_name:
+            if role_name not in self.account_manager._role_registry:
+                return {"status": False, "error":f"Role {role_name} does not exist."}
+            self.accounts[username]["role"] = role_name
+
         
         self.save_accounts()
         return {"status": True, "message": f"Account '{username}' updated successfully.\n"}
