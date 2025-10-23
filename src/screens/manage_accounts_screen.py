@@ -19,15 +19,28 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
 
     controller = ManageAccountsController(current_account=current_account)
 
-    for user_account, data in controller.get_all_accounts().items():
-        user_accounts.append(
-            {
-                # Format: id: number, username: string, data: dict { password: string, role: string }
-                "id": len(user_accounts) + 1,
-                "username": user_account,
-                "data": data
-            }
-        )
+    def refresh_user_accounts():
+        nonlocal user_accounts
+        user_accounts = []
+
+        # If there have been no changes, no need to refresh our array
+        controller.refresh_accounts()
+        if len(controller.get_all_accounts()) == len(user_accounts):
+            return
+
+        controller.refresh_accounts()
+
+        for user_account, data in controller.get_all_accounts().items():
+            user_accounts.append(
+                {
+                    # Format: id: number, username: string, data: dict { password: string, role: string }
+                    "id": len(user_accounts) + 1,
+                    "username": user_account,
+                    "data": data
+                }
+            )
+    
+    refresh_user_accounts()
 
     while True:
         clear_console()
@@ -36,6 +49,7 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
         prompt = colored(line, "white", attrs=["bold"])
         prompt += "\n" + ("-" * (12 + 20 + 15)) + "\n"
 
+        refresh_user_accounts()
         for user_account in user_accounts:
             user_id = str(user_account.get("id"))
             username = user_account.get("username")
