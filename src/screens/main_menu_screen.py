@@ -16,7 +16,8 @@ def main_menu_screen(current_account: Account) -> None:
         menu_options = [
             "View Students",
             "Add Student",
-            "Remove Student"
+            "Remove Student",
+            "Settings",
         ]
 
         if current_account.has_permission(Permissions.EDIT_ACCOUNT):
