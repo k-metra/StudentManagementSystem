@@ -33,8 +33,15 @@ def main_menu_screen(current_account: Account) -> None:
         
                 return
             case "Manage Accounts":
-                # Manage accounts screen logic here
-                pass 
+                # For security purposes, we re-validate if the user still has permission to manage accounts
+
+                if not current_account.has_permission(Permissions.EDIT_ACCOUNT):
+                    print(colored("\nYou do not have permission to manage other accounts.", "red"))
+                    enter_to_continue()
+                    continue
+
+                from screens import manage_accounts_screen
+                manage_accounts_screen(current_account, manager)
             case other:
                 print(f"You selected: {other}")
                 enter_to_continue()
