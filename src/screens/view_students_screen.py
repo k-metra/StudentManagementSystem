@@ -32,30 +32,39 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     "data": data
                 }
             )
-        refesh_student_records()
+        
+    refesh_student_records()
 
-        while True:
-            clear_console()
-            line = "Record ID".ljust(12) + "Student ID".ljust(15) + "Name".ljust(25) + "Year Level".ljust(12) + "Course".ljust(20)
+    while True:
+        clear_console()
+        line = "Record ID".ljust(12) + "Student ID".ljust(15) + "Name".ljust(25) + "Year Level".ljust(12) + "Course".ljust(20)
 
-            prompt = colored(line, "white", attrs=["bold"])
-            prompt += "\n" + ("-" * (12 + 15 + 25 + 12 + 20)) + "\n"
-            refresh_student_records()
-            for student_record in student_records:
-                record_id = str(student_record.get("id"))
-                student_id = student_record.get("student_id")
-                data = student_record.get("data")
-                name = f"{data.get('first_name')} {data.get('last_name')}"
-                year_level = str(data.get("year_level"))
-                course = data.get("course")
+        prompt = colored(line, "white", attrs=["bold"])
+        prompt += "\n" + ("-" * (12 + 15 + 25 + 12 + 20)) + "\n"
+        refresh_student_records()
+        for student_record in student_records:
+            record_id = str(student_record.get("id"))
+            student_id = student_record.get("student_id")
+            data = student_record.get("data")
+            name = f"{data.get('first_name')} {data.get('last_name')}"
+            year_level = str(data.get("year_level"))
+            course = data.get("course")
 
-                record_line = record_id.ljust(12) + student_id.ljust(15) + name.ljust(25) + year_level.ljust(12) + course.ljust(20)
+            record_line = record_id.ljust(12) + student_id.ljust(15) + name.ljust(25) + year_level.ljust(12) + course.ljust(20)
 
-                prompt += record_line + "\n"
+            prompt += record_line + "\n"
 
-            choice_manager.set_prompt(new_prompt=prompt)
-            choice_manager.set_options([
-                "Create New Account",
-                "Manage Existing Account",
-                "Back to Main Menu"
-            ])
+        choice_manager.set_prompt(new_prompt=prompt)
+        choice_manager.set_options([
+            "Back to Main Menu"
+            "Search Student Records"
+        ])
+        choice = choice_manager.get_user_choice()
+
+        match choice.label():
+            case "Back to Main Menu":
+                return
+            case "Search Student Records":
+                print("Searching student records... (Functionality not implemented yet)")
+                enter_to_continue()
+

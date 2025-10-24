@@ -43,8 +43,10 @@ def main_menu_screen(current_account: Account) -> None:
                 from screens import manage_accounts_screen
                 manage_accounts_screen(current_account, manager)
             case "View Students":
-                from screens import manage_students_screen
-                manage_students_screen(current_account, manager)
+
+                from screens import view_students_screen
+                view_students_screen(current_account, manager)
+                
                 print("Viewing students... (Functionality not implemented yet)")
                 enter_to_continue()
 
