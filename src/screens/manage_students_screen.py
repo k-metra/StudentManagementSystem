@@ -51,6 +51,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
         choice_manager.set_options([
             "View Students",
             "Add Student",
+            "Update Student",
             "Remove Student",
             "Back to Main Menu"
         ])
@@ -106,12 +107,12 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
                 else:
                     decision = input(colored(f"Are you sure you want to delete student with ID '{student_id}'? (y/n): ", "yellow")).strip().lower()
-                    if not decision != 'y':
+                    if not decision == 'y':
                         print(colored("Deletion aborted.", "cyan"))
                         enter_to_continue()
                         continue
-                    result = controller.delete_student(student_id=student_id)
                     print(colored(result.get("message") if result.get("status") else f"Failed to delete student: {result.get('error')}", "green" if result.get("status") else "red"))
+                    result = controller.delete_student(student_id=student_id)
             case other:
                 print(f"You selected: {other}")
                 enter_to_continue()
