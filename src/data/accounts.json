@@ -7,6 +7,10 @@
         "staff": {
             "password": "staff123",
             "role": "Staff"
+        },
+        "lols": {
+            "password": "123123",
+            "role": "Staff"
         }
     }
 }
