@@ -35,6 +35,7 @@ def interactive_table(
     
     while True:
         # Build menu options
+        clear_console()
         options = []
         
         # Add item selection option if there's data and callback
