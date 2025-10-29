@@ -34,7 +34,7 @@ class ManageStudentsController:
             data = json.load(file)
             self.students = data.get("students", {})
         return self.students
-    def create_student(self, student_id: str, first_name: str, last_name: str, year_level: int, course: str) -> dict[str, str | bool]:
+    def create_student(self, student_id: str, first_name: str, last_name: str, year_level: int, phone_number: str, course: str) -> dict[str, str | bool]:
         if student_id in self.students:
             return {"status": False, "error" : "Student with that ID already exists."}
         
@@ -42,6 +42,7 @@ class ManageStudentsController:
             "first_name": first_name,
             "last_name": last_name,
             "year_level": year_level,
+            "phone_number": phone_number,
             "course": course
         }
         self.save_students()
