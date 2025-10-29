@@ -135,6 +135,7 @@ class TableDisplay:
         result.append(colored(header_row, "white", attrs=["bold"]))
 
         # Separator line
+        separator = ""
         for field in headers.keys():
             separator += "-" * (column_widths[field] + 2)
         result.append(separator)
@@ -167,7 +168,7 @@ class TableDisplay:
         result.append(colored(pagination_info, "cyan"))
 
         # Active filters info
-        if self.filters or self.search_filters:
+        if self.filters or self.search_term:
             filter_info = "\nActive filters: "
             filter_parts = []
 
@@ -197,7 +198,7 @@ class TableDisplay:
         if self.current_page < self.get_total_pages():
             options.append("Next Page")
 
-        if self.get_total_pages > 1:
+        if self.get_total_pages() > 1:
             options.append("Go to Page")
         
         return options 
