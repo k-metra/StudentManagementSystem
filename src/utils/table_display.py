@@ -89,6 +89,7 @@ class TableDisplay:
     
     def previous_page(self) -> bool:
         if self.current_page > 1:
+            self.current_page -= 1
             return True 
         return False
 
