@@ -15,9 +15,7 @@ def main_menu_screen(current_account: Account, account_manager: AccountManager) 
         manager.set_prompt(colored(f"<== Welcome, {current_account}! ==>", "cyan", attrs=["bold"]))
 
         menu_options = [
-            "View Students",
-            "Add Student",
-            "Remove Student",
+            "Manage Students",
             "Settings",
         ]
 
@@ -44,6 +42,11 @@ def main_menu_screen(current_account: Account, account_manager: AccountManager) 
 
                 from screens import manage_accounts_screen
                 manage_accounts_screen(current_account, manager)
+                
+            case "Manage Students":
+                from screens import manage_students_screen
+                manage_students_screen(current_account, manager)
+
             case "Settings":
                 from screens import settings_screen
                 settings_screen(current_account, manager, account_manager)

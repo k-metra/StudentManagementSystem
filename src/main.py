@@ -16,6 +16,7 @@ from enums.permissions import Permissions
 
 from screens import login_screen
 
+
 def main() -> None:
     account_manager = AccountManager()
     current_account: Account | None = None
@@ -34,6 +35,7 @@ def main() -> None:
 
             continue
         
+
         from screens import main_menu_screen
         main_menu_screen(current_account, account_manager)
         current_account = None
