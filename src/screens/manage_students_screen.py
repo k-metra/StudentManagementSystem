@@ -64,12 +64,20 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 return
             
             case "Add Student":
-                # Determine next student ID from existing records.
+                # Determine next student ID from existing records. If none exist, use a sensible default.
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
-                recent_id = ids[-1]
-                prefix, suffix = recent_id.split("-")
-                prefix = int(prefix) + 1 
-                new_student_id = f"{str(prefix)}-{suffix}"
+                if ids:
+                    recent_id = ids[-1]
+                    try:
+                        prefix, suffix = recent_id.split("-")
+                        prefix = int(prefix) + 1
+                        new_student_id = f"{prefix}-{suffix}"
+                    except Exception:
+                        # If the existing ID doesn't match expected format, fall back to asking the user.
+                        new_student_id = input("Enter new Student ID (format YYYY-XX): ").strip()
+                else:
+                    # No existing students — start with a reasonable default
+                    new_student_id = "1001-25"
 
                 first_name = input("Enter First Name: ").strip()
                 last_name = input("Enter Last Name: ").strip()
@@ -82,7 +90,8 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     enter_to_continue()
                     continue
 
-                result = controller.create_student(student_id=new_student_id, first_name=first_name, last_name=last_name, year_level=year_level, course=course)
+                # Call controller.create_student with the correct arguments (no duplicate keywords)
+                result = controller.create_student(student_id=new_student_id, first_name=first_name, last_name=last_name, year_level=year_level, phone_number=phone_number, course=course)
                 if result.get("status"):
                     print(colored(f"Student '{first_name} {last_name}' added successfully (ID: {new_student_id}).", "green"))
                     # Refresh local records to include the new student
@@ -111,8 +120,8 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                         print(colored("Deletion aborted.", "cyan"))
                         enter_to_continue()
                         continue
-                    print(colored(result.get("message") if result.get("status") else f"Failed to delete student: {result.get('error')}", "green" if result.get("status") else "red"))
                     result = controller.delete_student(student_id=student_id)
+                    print(colored(result.get("message") if result.get("status") else f"Failed to delete student: {result.get('error')}", "green" if result.get("status") else "red"))
             case other:
                 print(f"You selected: {other}")
                 enter_to_continue()
