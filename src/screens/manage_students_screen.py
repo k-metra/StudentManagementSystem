@@ -7,7 +7,7 @@ from classes.UserChoiceManager import UserChoiceManager
 from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
 from termcolor import colored
-
+import re
 
 def manage_students_screen(current_account: Account, choice_manager: UserChoiceManager) -> None:
     header = colored(f"<== Manage Students ==>", "cyan", attrs=["bold"])
@@ -90,8 +90,28 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored(f"Failed to add student: {result.get('error')}", "red"))
 
                 enter_to_continue()
-
-
+            
+            case "Remove Student":
+                student_id_pattern = r"\d{4}-\d{2}$"
+                student_id = input("Enter the Student ID to remove (or 'x' to abort): ").strip()
+                if student_id.lower() == 'x':
+                    continue
+                if not re.match(student_id_pattern, student_id):
+                    print(colored("Invalid Student ID format. Please use 'YYYY-XX' format.", "red"))
+                    enter_to_continue()
+                    continue
+                elif student_id not in controller.get_all_students():
+                    print(colored(f"No student found with ID '{student_id}'.", "red"))
+                    enter_to_continue()
+                    continue
+                else:
+                    decision = input(colored(f"Are you sure you want to delete student with ID '{student_id}'? (y/n): ", "yellow")).strip().lower()
+                    if not decision != 'y':
+                        print(colored("Deletion aborted.", "cyan"))
+                        enter_to_continue()
+                        continue
+                    result = controller.delete_student(student_id=student_id)
+                    print(colored(result.get("message") if result.get("status") else f"Failed to delete student: {result.get('error')}", "green" if result.get("status") else "red"))
             case other:
                 print(f"You selected: {other}")
                 enter_to_continue()

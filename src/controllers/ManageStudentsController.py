@@ -46,4 +46,13 @@ class ManageStudentsController:
         }
         self.save_students()
         return {"status": True, "message": f"Student '{student_id}' created successfully"}
+
+    def delete_student(self, student_id: str) -> dict[str, str | bool]:
+        if student_id not in self.students:
+            return {"status": False, "error": "Student with that ID does not exist."}
+        
+        del self.students[student_id]
+        self.save_students()
+        return {"status": True, "message": f"Student '{student_id}' deleted successfully."}
+    
     
