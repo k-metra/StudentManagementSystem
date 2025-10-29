@@ -173,6 +173,7 @@ class TableDisplay:
             filter_info = "\nActive filters: "
             filter_parts = []
 
+            search_info = ""
             if self.search_term:
                 search_info += f"Search: '{self.search_term}'"
 
