@@ -17,8 +17,14 @@ def entry_screen(account_manager: AccountManager) -> Account | None:
 
         match choice.label():
             case "Exit":
-                print(colored("\nExiting the application. Goodbye!", "yellow"))
-                return
+                print(colored("\nAre you sure you want to exit the application? (Y/N)", "yellow"), end=" ")
+                confirm = input().strip().lower()
+
+                if confirm == "y":
+                    print(colored("\nExiting the application. Goodbye!", "yellow"))
+                    return 
+                else:
+                    continue
             case "Login":
                 from screens import login_screen
 
