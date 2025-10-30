@@ -22,6 +22,18 @@ def decronymize(acronym: str, mapping: dict | None = None) -> str:
         "CTHM":     "College of Tourism and Hospitality Management",
         "COED":     "College of Education",
         "CAS":      "College of Arts and Sciences",
+
+        # Courses
+        "BSIT":     "Bachelor of Science in Information Technology",
+        "BSCS":     "Bachelor of Science in Computer Science",
+        "BSBA":     "Bachelor of Science in Business Administration",
+        "BSE":      "Bachelor of Science in Education",
+        "BSTM":     "Bachelor of Science in Tourism Management",
+        "BSCE":     "Bachelor of Science in Civil Engineering",
+        "BSCrim":   "Bachelor of Science in Criminology",
+        "LLB":      "Bachelor of Laws",
+        "MD":       "Doctor of Medicine",
+        "DICT":     "Diploma in Computer Technology",
     }
 
     return mapping.get(acronym.upper(), acronym)
