@@ -3,16 +3,14 @@
         "1001-25": {
             "first_name": "Kurt",
             "last_name": "Metra",
-            "phone_number": "12312312300",
+            "phone_number": "09939928496",
             "year_level": 1,
-            "course": "Computer Science"
-        },
-        "1002-25": {
-            "first_name": "Will",
-            "last_name": "Arinsol",
-            "phone_number": "00123123123",
-            "year_level": 3,
-            "course": "Business Administration"
+            "course": "Information Technology",
+            "home_address": "#13 St. Luke Street, Pacita 1 Phase 1-C, San Pedro, Laguna",
+            "email_address": "metrakurt@gmail.com",
+            "guardian_name": "Eduardo Osial Reyes",
+            "guardian_contact": "09953347028",
+            "department": "College of Computer Studies"
         }
     }
 }
