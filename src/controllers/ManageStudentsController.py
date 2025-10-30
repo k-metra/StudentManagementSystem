@@ -7,7 +7,6 @@ import os
 import json 
 
 class ManageStudentsController:
-    STUDENT_FILE = "src/data/students.json"
     def __init__(self, current_account: Account):
         self.account_manager = AccountManager()
         self.accounts = self.account_manager.load_accounts()
@@ -15,7 +14,8 @@ class ManageStudentsController:
 
         load_dotenv()
 
-        self.DATA_FILE = os.getenv("students_DATA_FILE")
+        self.DATA_FILE = os.getenv("STUDENTS_DATA_FILE", "src/data/students.json")
+        self.STUDENT_FILE = self.DATA_FILE
 
     # utility Helpers
 
@@ -34,6 +34,7 @@ class ManageStudentsController:
             data = json.load(file)
             self.students = data.get("students", {})
         return self.students
+    
     def create_student(self, student_id: str, first_name: str, last_name: str, year_level: int, phone_number: str, course: str) -> dict[str, str | bool]:
         if student_id in self.students:
             return {"status": False, "error" : "Student with that ID already exists."}
@@ -47,6 +48,14 @@ class ManageStudentsController:
         }
         self.save_students()
         return {"status": True, "message": f"Student '{student_id}' created successfully"}
+    
+    def update_student(self, student_id: str, update_info: dict) -> dict[str, str | bool]:
+        if student_id not in self.students:
+            return {"status": False, "error": "Student with that ID does not exist."}
+
+        self.students[student_id] = {**self.students[student_id], **update_info}
+        self.save_students()
+        return {"status": True, "message": f"Student '{student_id}' updated successfully."}
 
     def delete_student(self, student_id: str) -> dict[str, str | bool]:
         if student_id not in self.students:
