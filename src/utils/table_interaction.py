@@ -75,6 +75,7 @@ def interactive_table(
             return None
         elif choice_label == "Select Item":
             handle_item_selection(table, on_select_item)
+            return True # We return a non-null value to indicate an item was selected
         elif choice_label == "Previous Page":
             table.previous_page()
         elif choice_label == "Next Page":
@@ -109,6 +110,7 @@ def handle_item_selection(table: TableDisplay, on_select_item: Callable):
             if actual_index < len(table.filtered_data):
                 selected_item = table.filtered_data[actual_index]
                 on_select_item(selected_item, item_id)
+                return
             else:
                 print(colored("Invalid item ID.", "red"))
                 enter_to_continue()
