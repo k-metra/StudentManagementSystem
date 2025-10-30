@@ -10,7 +10,7 @@ def acronymize(phrase: str) -> str:
 
     return acronym 
 
-def expand_acronym(acronym: str, mapping: dict | None = None) -> str:
+def decronymize(acronym: str, mapping: dict | None = None) -> str:
 
     mapping = mapping or {
         "CCS":      "College of Computer Studies",
