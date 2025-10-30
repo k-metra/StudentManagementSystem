@@ -28,9 +28,14 @@ def main_menu_screen(current_account: Account, account_manager: AccountManager) 
 
         match choice.label():
             case "Logout":
-                print("Logging out...")
+                print(colored("Are you sure you want to logout? (Y/N): ", "yellow"), end="")
+                confirmation = input().strip().lower()
+                if confirmation != 'y':
+                    print(colored("Logout cancelled.", "red"))
+                    enter_to_continue()
+                    continue
+
                 enter_to_continue()
-        
                 return
             case "Manage Accounts":
                 # For security purposes, we re-validate if the user still has permission to manage accounts
