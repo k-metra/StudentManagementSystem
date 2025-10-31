@@ -36,6 +36,7 @@ def main() -> None:
             continue
         
 
+
         from screens import main_menu_screen
         main_menu_screen(current_account, account_manager)
         current_account = None
