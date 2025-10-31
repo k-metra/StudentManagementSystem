@@ -192,8 +192,54 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
 
         match result:
             case "Add Student":
-                # handle add student
-                pass 
+                ids = [r.get("student_id") for r in student_records if r.get("student_id")]
+                student_id = ids[-1]
+                prefix, suffix = student_id.split("-")
+                prefix = int(prefix) + 1
+                new_student_id = f"{str(prefix)}-{suffix}"
+
+                # Handle adding a new student
+                colored(f"<== Adding Student: {new_student_id} ==>", "cyan", attrs=["bold"]),
+                first_name = input("First Name: ")
+                last_name = input("Last Name: ")
+                year_level = int(input("(Input only the number of year. i.e First year = 1) Year Level: "))
+                course = input("Course: ")
+                address = input("Home Address: ")
+                email = input("Email Address: ")
+                phone_number = input("Phone Number: ")
+                guardian_name = input("Guardian Name: ")
+                guardian_contact = input("Guardian Contact: ")
+                dept = input("Department: ")
+
+                colored(f"<== Confirm Student Information ==>", "cyan", attrs=["bold"]),
+                print(f"First name: {first_name}")
+                print(f"Last name: {last_name}")
+                print(f"Year Level: {year_level}")
+                print(f"Course: {course}")
+                print(f"Home Address: {address}")
+                print(f"Email Address: {email}")
+                print(f"Phone Number: {phone_number}")
+                print(f"Guardian Name: {guardian_name}")
+                print(f"Guardian Contact: {guardian_contact}")
+                decision = input(colored("Is the information correct? (y/n): ", "yellow")).strip().lower()
+                if decision != 'y':
+                    print("Student Creation is aborted.")
+                else:
+                    controller.create_student(
+                        student_id=new_student_id,
+                        first_name=first_name,
+                        last_name=last_name,
+                        phone_number=phone_number,
+                        year_level=year_level,
+                        course=course,
+                        address=address,
+                        email=email,
+                        guardian_name = guardian_name,
+                        guardian_contact = guardian_contact,
+                        dept = dept
+                    )
+                    
+                    
             case None:
                 return
             case other:
