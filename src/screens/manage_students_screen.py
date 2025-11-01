@@ -173,7 +173,6 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
         student_records = get_student_records()
 
         columns = {
-            "id": "ID",
             "student_id": "Student ID",
             "full_name": "Full Name",
             "year_level": "Year Level",
