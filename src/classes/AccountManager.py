@@ -26,14 +26,14 @@ class AccountManager:
         
         return self._accounts
     
-    def get_account(self, username: str, password: str, role: str | None = None) -> dict[str, str] | None:
+    def get_account(self, username: str, password: str | None = None, role: str | None = None) -> dict[str, str] | None:
         if self._accounts is None:
             self.load_accounts()
         
         if username not in self._accounts:
             return None 
         
-        if password != self._accounts[username]["password"]:
+        if password and password != self._accounts[username]["password"]:
             return None 
         
         if role and self._accounts[username]["role"] != role:
