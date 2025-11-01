@@ -23,7 +23,7 @@ def login_screen(account_manager: AccountManager) -> Account | None:
             enter_to_continue()
             continue 
 
-        if not check_password(password, account_data.password):
+        if not check_password(password, account_data.get("password", "")):
             print(colored("\nIncorrect password. Please try again.", "red"))
             enter_to_continue()
             continue
