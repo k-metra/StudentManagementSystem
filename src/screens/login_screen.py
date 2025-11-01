@@ -4,6 +4,7 @@ from utils.misc import enter_to_continue
 from termcolor import colored
 from classes.AccountManager import AccountManager
 from classes.Account import Account
+from utils.passwords import check_password
 
 def login_screen(account_manager: AccountManager) -> Account | None:
     while True:
@@ -16,11 +17,16 @@ def login_screen(account_manager: AccountManager) -> Account | None:
         if not username and not password:
             return None
 
-        account_data = account_manager.get_account(username=username, password=password)
+        account_data: Account = account_manager.get_account(username=username)
         if account_data is None:
-            print(colored("\nInvalid username or password. Please try again.", "red"))
+            print(colored(f"\nAccount with username '{username}' does not exist.", "red"))
             enter_to_continue()
             continue 
+
+        if not check_password(password, account_data.password):
+            print(colored("\nIncorrect password. Please try again.", "red"))
+            enter_to_continue()
+            continue
 
         account: Account = account_manager.load_account(username=username, account_json=account_data)
         print(colored(f"\nLogin successful! Welcome, {account}.", "green"))
