@@ -1,14 +1,12 @@
 from controllers import ManageAccountsController
 from utils.clear_console import clear_console
-from classes.AccountManager import AccountManager
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
 from utils.misc import enter_to_continue
-from utils.misc import clear_input_buffer
 from utils.table_interaction import interactive_table
 from termcolor import colored
+from enums.permissions import Permissions
 import pwinput
-import time
 
 def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceManager) -> None:
     controller = ManageAccountsController(current_account=current_account)
@@ -29,7 +27,7 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
     
     def handle_account_selection(selected_account: dict, item_id: int):
         """Handle when an account is selected from the table"""
-        manage_single_account(selected_account, controller)
+        manage_single_account(current_account, selected_account, controller)
     
     # Define table columns
     columns = {
@@ -40,13 +38,17 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
     
     while True:
         accounts_data = get_accounts_data()
+        additional_options = []
+
+        if current_account.has_permission(Permissions.CREATE_ACCOUNT):
+            additional_options.append("Create New Account")
         
         # Show interactive table
         result = interactive_table(
             data=accounts_data,
             columns=columns,
             title="Manage Accounts",
-            additional_options=["Create New Account"],
+            additional_options=additional_options,
             on_select_item=handle_account_selection,
             items_per_page=10
         )
@@ -54,10 +56,16 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
         if result is None:  # Back was selected
             return
         elif result == "Create New Account":
-            create_new_account(controller)
+            create_new_account(current_account, controller)
 
-def create_new_account(controller):
+def create_new_account(current_account: Account, controller):
     """Handle creating a new account"""
+
+    if not current_account.has_permission(Permissions.CREATE_ACCOUNT):
+        print(colored("You do not have permission to create new accounts.", "red"))
+        enter_to_continue()
+        return
+
     clear_console()
     print(colored("<== Create New Account ==>", "cyan", attrs=["bold"]))
     print()
@@ -89,7 +97,7 @@ def create_new_account(controller):
     
     enter_to_continue()
 
-def manage_single_account(selected_account: dict, controller):
+def manage_single_account(current_account: Account, selected_account: dict, controller):
     """Handle managing a single account"""
     choice_manager = UserChoiceManager()
     username = selected_account["username"]
@@ -119,21 +127,43 @@ def manage_single_account(selected_account: dict, controller):
         prompt = "\n".join(prompts)
         
         choice_manager.set_prompt(prompt)
-        choice_manager.set_options([
-            "Change Password",
-            "Change Role",
-            "Delete Account",
-            "Back to Account List"
-        ])
+
+        options = []
+
+        if current_account.has_permission(Permissions.EDIT_ACCOUNT):
+            options.extend([
+                "Change Password",
+                "Change Role",
+            ])
+
+        if current_account.has_permission(Permissions.DELETE_ACCOUNT):
+            options.append("Delete Account")
+
+        options.append("Back to Account List")
+        choice_manager.set_options(options)
         
         choice = choice_manager.get_user_choice()
         
         match choice.label():
             case "Change Password":
+                if not current_account.has_permission(Permissions.EDIT_ACCOUNT):
+                    print(colored("You do not have permission to change account passwords.", "red"))
+                    enter_to_continue()
+                    continue
+
                 change_account_password(username, controller)
             case "Change Role":
+                if not current_account.has_permission(Permissions.EDIT_ACCOUNT):
+                    print(colored("You do not have permission to change account roles.", "red"))
+                    enter_to_continue()
+                    continue
+
                 change_account_role(username, controller)
             case "Delete Account":
+                if not current_account.has_permission(Permissions.DELETE_ACCOUNT):
+                    print(colored("You do not have permission to delete accounts.", "red"))
+                    enter_to_continue()
+                    continue
                 if delete_account(username, controller):
                     return  # Account deleted, go back to list
             case "Back to Account List":
