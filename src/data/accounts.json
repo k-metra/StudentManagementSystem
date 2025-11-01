@@ -1,7 +1,7 @@
 {
     "accounts": {
         "admin": {
-            "password": "admin123",
+            "password": "$2b$12$gXWZuXVJmermYMQ84mmbMO7fbbUHnvA0rsk7T5Z2sUQCtMk.AFjR6",
             "role": "Admin"
         },
         "staff": {
