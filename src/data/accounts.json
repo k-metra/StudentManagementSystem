@@ -5,11 +5,11 @@
             "role": "Admin"
         },
         "staff": {
-            "password": "staff123",
+            "password": "$2b$12$ruBfGcY0G5xzPwVKlD/6E.A4Uk2O6APi5KiolWU3unPgQRHoLo8tK",
             "role": "Staff"
         },
         "lols": {
-            "password": "123123",
+            "password": "$2b$12$ruBfGcY0G5xzPwVKlD/6E.7lVRZ0FeXrKztpCcWY0WaeGMlV7aw8u",
             "role": "Admin"
         }
     }
