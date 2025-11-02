@@ -11,6 +11,44 @@ from termcolor import colored
 from utils.acronym import acronymize, decronymize
 import re
 
+def edit_contact_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
+    student_info = controller.get_all_students().get(student_id, {})
+    clear_console() 
+
+    print("\n".join(header))
+    print(colored("== Edit Contact Information ==\n", "white", attrs=["bold"]))
+    print("Leave a field blank to keep the current value.\n")
+
+    email_address = input(f"Email Address [{student.get('email_address', '')}]: ").strip()
+    phone_number = input(f"Phone Number [{student.get('phone_number', '')}]: ").strip()
+    home_address = input(f"Home Address [{student.get('home_address', '')}]: ").strip()
+
+    student_info['email_address'] = email_address if email_address else student_info.get('email_address', '')
+    student_info['phone_number'] = phone_number if phone_number else student_info.get('phone_number', '')
+    student_info['home_address'] = home_address if home_address else student_info.get('home_address', '')
+
+    print("\nConfirm information:")
+    print(f"Email Address: {student_info['email_address']}")
+    print(f"Phone Number: {student_info['phone_number']}")
+    print(f"Home Address: {student_info['home_address']}\n")
+
+    confirmation = input("Is the information correct? (y/n): ").strip().lower()
+
+    if confirmation != 'y':
+        print(colored("Update aborted.", "cyan"))
+        enter_to_continue()
+        return
+    
+    result = controller.update_student(student_id, student_info)
+    if result.get("status"):
+        print(colored(f"Contact information updated successfully.", "green"))
+        enter_to_continue()
+        return student_info
+    else:
+        print(colored(f"Failed to update contact information: {result.get('error')}", "red"))
+        enter_to_continue()
+        return
+
 def edit_student_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
     student_info = controller.get_all_students().get(student_id, {})
     clear_console()
@@ -112,7 +150,8 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
                 student = updated_data if updated_data else student_data
             case "Edit Contact Information":
                 # Handle editing contact information
-                pass
+                updated_data = edit_contact_info(student_id, student_data, controller, header)
+                student = updated_data if updated_data else student_data
             case "Edit Guardian Information":
                 # Handle editing guardian information
                 pass
