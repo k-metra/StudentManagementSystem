@@ -335,15 +335,4 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                continue
 
 
-        #for student_record in student_records:
-
-        # choice_manager.set_prompt(new_prompt = prompt)
-        # choice_manager.set_options([
-        #     "View Students",
-        #     "Add Student",
-        #     "Update Student",
-        #     "Remove Student",
-        #     "Back to Main Menu"
-        # ])
-
 
