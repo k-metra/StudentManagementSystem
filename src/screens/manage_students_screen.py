@@ -4,6 +4,7 @@ from utils.clear_console import clear_console
 from classes.AccountManager import AccountManager
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
+from utils.file_dialog import select_file
 from utils.table_interaction import interactive_table
 from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
@@ -259,7 +260,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
             columns=columns,
             title="Student Records",
             on_select_item=handle_student_select,
-            additional_options=["Add Student"],
+            additional_options=["Add Student", "Bulk Import"],
             items_per_page=10
         )
 
@@ -316,7 +317,17 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                         guardian_contact = guardian_contact,
                         dept = dept
                     )
-                    
+            case "Bulk Import":
+                print("Select a file to import student records from.")
+                print("Columns should be: student_id, first_name, last_name, year_level, phone_number, course, home_address, email_address, guardian_name, guardian_contact, department")
+                file_path = select_file()
+
+                if not file_path:
+                    print(colored("No file selected. Bulk import aborted.", "red"))
+                    enter_to_continue()
+                    continue
+
+
                     
             case None:
                 return
