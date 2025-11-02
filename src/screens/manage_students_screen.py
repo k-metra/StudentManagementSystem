@@ -210,7 +210,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 guardian_contact = input("Guardian Contact: ")
                 dept = input("Department: ")
 
-                colored(f"<== Confirm Student Information ==>", "cyan", attrs=["bold"]),
+                colored(f"\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]),
                 print(f"First name: {first_name}")
                 print(f"Last name: {last_name}")
                 print(f"Year Level: {year_level}")
