@@ -326,13 +326,18 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored("No file selected. Bulk import aborted.", "red"))
                     enter_to_continue()
                     continue
+                
+                result = controller.bulk_import_students(file_path)
 
+                if result.get("status"):
+                    print(colored(result.get("message", result.get("message")), "green"))
+                else:
+                    print(colored(result.get("error", "An error occurred during bulk import."), "red"))
 
-                    
+                enter_to_continue()
+
             case None:
                 return
             case other:
                continue
-
-
 
