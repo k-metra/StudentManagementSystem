@@ -12,10 +12,10 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
         sheet = workbook.active # First sheet by default
 
         headers = [str(cell.value).strip() for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
-        required_fields = [
+        required_fields = {
             'student_id', 'first_name', 'last_name', 'year_level', 'phone_number', 'course', 'home_address',
             'email_address', 'guardian_name', 'guardian_contact', 'department'
-        ]
+        }
 
         missing = required_fields - set(headers)
 
@@ -27,7 +27,7 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
         header_indices = {header: idx for idx, header in enumerate(headers)}
 
         for row in sheet.iter_rows(min_row=2, values_only=True):
-            student_id = str(row[header_indices.get('first_name', '')] or '').strip()
+            student_id = str(row[header_indices.get('student_id', '')] or '').strip()
 
             if not student_id:
                 continue
