@@ -4,7 +4,9 @@ from enums.permissions import Permissions
 from roles import * # Import all roles
 from dotenv import load_dotenv
 import os
-import json 
+import json
+
+from utils.excel_import import import_students_from_excel 
 
 class ManageStudentsController:
     def __init__(self, current_account: Account):
@@ -54,6 +56,32 @@ class ManageStudentsController:
         }
         self.save_students()
         return {"status": True, "message": f"Student '{student_id}' created successfully"}
+    
+    def bulk_import_students(self, excel_path: str) -> dict[str, str | bool]:
+        new_students = import_students_from_excel(excel_path)
+
+        if not new_students:
+            return {"status": False, "error": "No students were imported."}
+        
+        self.refresh_students()
+
+        added, skipped = 0, 0
+
+        for student_id, data in new_students.items():
+            if student_id in self.students:
+                skipped += 1
+                continue
+            
+            self.students[student_id] = data
+            added += 1
+        
+        self.save_students()
+
+        return {
+            "status": True,
+            "message": f"Bulk import completed. {added} students added, {skipped} (existing) students skipped."
+        }
+
     
     def update_student(self, student_id: str, update_info: dict) -> dict[str, str | bool]:
         if student_id not in self.students:
