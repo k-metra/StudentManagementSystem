@@ -11,6 +11,41 @@ from termcolor import colored
 from utils.acronym import acronymize, decronymize
 import re
 
+def edit_guardian_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
+    student_info = controller.get_all_students().get(student_id, {})
+    clear_console() 
+
+    print("\n".join(header))
+    print(colored("== Edit Guardian Information ==\n", "white", attrs=["bold"]))
+    print("Leave a field blank to keep the current value.\n")
+
+    guardian_name = input(f"Guardian Name [{student.get('guardian_name', '')}]: ").strip()
+    guardian_contact = input(f"Guardian Contact [{student.get('guardian_contact', '')}]: ").strip()
+
+    student_info['guardian_name'] = guardian_name if guardian_name else student_info.get('guardian_name', '')
+    student_info['guardian_contact'] = guardian_contact if guardian_contact else student_info.get('guardian_contact', '')
+
+    print("\nConfirm information:")
+    print(f"Guardian Name: {student_info['guardian_name']}")
+    print(f"Guardian Contact: {student_info['guardian_contact']}\n")
+
+    confirmation = input("Is the information correct? (y/n): ").strip().lower()
+
+    if confirmation != 'y':
+        print(colored("Update aborted.", "cyan"))
+        enter_to_continue()
+        return
+    
+    result = controller.update_student(student_id, student_info)
+    if result.get("status"):
+        print(colored(f"Guardian information updated successfully.", "green"))
+        enter_to_continue()
+        return student_info
+    else:
+        print(colored(f"Failed to update guardian information: {result.get('error')}", "red"))
+        enter_to_continue()
+        return
+
 def edit_contact_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
     student_info = controller.get_all_students().get(student_id, {})
     clear_console() 
@@ -153,8 +188,8 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
                 updated_data = edit_contact_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Edit Guardian Information":
-                # Handle editing guardian information
-                pass
+                updated_data = edit_guardian_info(student_id, student_data, controller, header)
+                student = updated_data if updated_data else student_data
             case "Delete Student":
                 decision = input(colored(f"Are you sure you want to delete student '{student_name}' (ID: {student_id})? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
