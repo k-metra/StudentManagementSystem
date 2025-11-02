@@ -11,6 +11,79 @@ from termcolor import colored
 from utils.acronym import acronymize, decronymize
 import re
 
+def edit_guardian_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
+    student_info = controller.get_all_students().get(student_id, {})
+    clear_console() 
+
+    print("\n".join(header))
+    print(colored("== Edit Guardian Information ==\n", "white", attrs=["bold"]))
+    print("Leave a field blank to keep the current value.\n")
+
+    guardian_name = input(f"Guardian Name [{student.get('guardian_name', '')}]: ").strip()
+    guardian_contact = input(f"Guardian Contact [{student.get('guardian_contact', '')}]: ").strip()
+
+    student_info['guardian_name'] = guardian_name if guardian_name else student_info.get('guardian_name', '')
+    student_info['guardian_contact'] = guardian_contact if guardian_contact else student_info.get('guardian_contact', '')
+
+    print("\nConfirm information:")
+    print(f"Guardian Name: {student_info['guardian_name']}")
+    print(f"Guardian Contact: {student_info['guardian_contact']}\n")
+
+    confirmation = input("Is the information correct? (y/n): ").strip().lower()
+
+    if confirmation != 'y':
+        print(colored("Update aborted.", "cyan"))
+        enter_to_continue()
+        return
+    
+    result = controller.update_student(student_id, student_info)
+    if result.get("status"):
+        print(colored(f"Guardian information updated successfully.", "green"))
+        enter_to_continue()
+        return student_info
+    else:
+        print(colored(f"Failed to update guardian information: {result.get('error')}", "red"))
+        enter_to_continue()
+        return
+
+def edit_contact_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
+    student_info = controller.get_all_students().get(student_id, {})
+    clear_console() 
+
+    print("\n".join(header))
+    print(colored("== Edit Contact Information ==\n", "white", attrs=["bold"]))
+    print("Leave a field blank to keep the current value.\n")
+
+    email_address = input(f"Email Address [{student.get('email_address', '')}]: ").strip()
+    phone_number = input(f"Phone Number [{student.get('phone_number', '')}]: ").strip()
+    home_address = input(f"Home Address [{student.get('home_address', '')}]: ").strip()
+
+    student_info['email_address'] = email_address if email_address else student_info.get('email_address', '')
+    student_info['phone_number'] = phone_number if phone_number else student_info.get('phone_number', '')
+    student_info['home_address'] = home_address if home_address else student_info.get('home_address', '')
+
+    print("\nConfirm information:")
+    print(f"Email Address: {student_info['email_address']}")
+    print(f"Phone Number: {student_info['phone_number']}")
+    print(f"Home Address: {student_info['home_address']}\n")
+
+    confirmation = input("Is the information correct? (y/n): ").strip().lower()
+
+    if confirmation != 'y':
+        print(colored("Update aborted.", "cyan"))
+        enter_to_continue()
+        return
+    
+    result = controller.update_student(student_id, student_info)
+    if result.get("status"):
+        print(colored(f"Contact information updated successfully.", "green"))
+        enter_to_continue()
+        return student_info
+    else:
+        print(colored(f"Failed to update contact information: {result.get('error')}", "red"))
+        enter_to_continue()
+        return
+
 def edit_student_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
     student_info = controller.get_all_students().get(student_id, {})
     clear_console()
@@ -112,10 +185,11 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
                 student = updated_data if updated_data else student_data
             case "Edit Contact Information":
                 # Handle editing contact information
-                pass
+                updated_data = edit_contact_info(student_id, student_data, controller, header)
+                student = updated_data if updated_data else student_data
             case "Edit Guardian Information":
-                # Handle editing guardian information
-                pass
+                updated_data = edit_guardian_info(student_id, student_data, controller, header)
+                student = updated_data if updated_data else student_data
             case "Delete Student":
                 decision = input(colored(f"Are you sure you want to delete student '{student_name}' (ID: {student_id})? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
@@ -173,7 +247,6 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
         student_records = get_student_records()
 
         columns = {
-            "id": "ID",
             "student_id": "Student ID",
             "full_name": "Full Name",
             "year_level": "Year Level",
@@ -192,8 +265,59 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
 
         match result:
             case "Add Student":
-                # handle add student
-                pass 
+                ids = [r.get("student_id") for r in student_records if r.get("student_id")]
+                student_id = ids[-1]
+                prefix, suffix = student_id.split("-")
+                prefix = int(prefix) + 1
+                new_student_id = f"{str(prefix)}-{suffix}"
+
+                # Handle adding a new student
+                colored(f"<== Adding Student: {new_student_id} ==>", "cyan", attrs=["bold"]),
+                first_name = input("First Name: ")
+                last_name = input("Last Name: ")
+                try:
+                    year_level = int(input("(Input only the number of year. i.e First year = 1) Year Level: "))
+                except ValueError:
+                    print(colored("Invalid input for year level. You must choose between year 1-4. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+                course = input("Course: ")
+                address = input("Home Address: ")
+                email = input("Email Address: ")
+                phone_number = input("Phone Number: ")
+                guardian_name = input("Guardian Name: ")
+                guardian_contact = input("Guardian Contact: ")
+                dept = input("Department: ")
+
+                colored(f"\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]),
+                print(f"First name: {first_name}")
+                print(f"Last name: {last_name}")
+                print(f"Year Level: {year_level}")
+                print(f"Course: {course}")
+                print(f"Home Address: {address}")
+                print(f"Email Address: {email}")
+                print(f"Phone Number: {phone_number}")
+                print(f"Guardian Name: {guardian_name}")
+                print(f"Guardian Contact: {guardian_contact}")
+                decision = input(colored("Is the information correct? (y/n): ", "yellow")).strip().lower()
+                if decision != 'y':
+                    print("Student Creation is aborted.")
+                else:
+                    controller.create_student(
+                        student_id=new_student_id,
+                        first_name=first_name,
+                        last_name=last_name,
+                        phone_number=phone_number,
+                        year_level=year_level,
+                        course=course,
+                        address=address,
+                        email=email,
+                        guardian_name = guardian_name,
+                        guardian_contact = guardian_contact,
+                        dept = dept
+                    )
+                    
+                    
             case None:
                 return
             case other:

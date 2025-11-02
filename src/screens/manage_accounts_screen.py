@@ -3,6 +3,8 @@ from utils.clear_console import clear_console
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
 from utils.misc import enter_to_continue
+from utils.misc import clear_input_buffer
+from utils.passwords import make_password
 from utils.table_interaction import interactive_table
 from termcolor import colored
 from enums.permissions import Permissions
@@ -81,6 +83,8 @@ def create_new_account(current_account: Account, controller):
         print(colored("Password cannot be empty.", "red"))
         enter_to_continue()
         return
+    
+    password = make_password(password)
     
     role = input("Enter role for the new account: ").strip()
     if not role:
@@ -181,6 +185,7 @@ def change_account_password(username: str, controller):
         enter_to_continue()
         return
     
+    
     confirm_password = pwinput.pwinput("Re-enter new password: ")
     
     if new_password != confirm_password:
@@ -188,6 +193,8 @@ def change_account_password(username: str, controller):
         enter_to_continue()
         return
     
+    new_password = make_password(new_password)
+
     result = controller.update_account(username=username, password=new_password)
     
     if result.get("status"):
