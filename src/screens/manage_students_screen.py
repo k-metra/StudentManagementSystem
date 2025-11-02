@@ -275,7 +275,12 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 colored(f"<== Adding Student: {new_student_id} ==>", "cyan", attrs=["bold"]),
                 first_name = input("First Name: ")
                 last_name = input("Last Name: ")
-                year_level = int(input("(Input only the number of year. i.e First year = 1) Year Level: "))
+                try:
+                    year_level = int(input("(Input only the number of year. i.e First year = 1) Year Level: "))
+                except ValueError:
+                    print(colored("Invalid input for year level. You must choose between year 1-4. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
                 course = input("Course: ")
                 address = input("Home Address: ")
                 email = input("Email Address: ")
