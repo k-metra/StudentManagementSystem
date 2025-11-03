@@ -164,16 +164,19 @@ def manage_single_student(current_account, student: dict, controller: ManageStud
         
         choice_manager.set_prompt("\n".join(header))
 
+        options = []
 
         # In the future we'll instead build the options one-by-one based on permissions
-        choice_manager.set_options([
-            "Edit Student Information",
-            "Edit Contact Information",
-            "Edit Guardian Information",
-            "Delete Student",
-            "Back to Student List"
-        ])
-
+        if current_account.has_permission(Permissions.EDIT_STUDENT):
+            options.extend([
+                "Edit Student Information",
+                "Edit Contact Information",
+                "Edit Guardian Information",
+                "Delete Student"
+            ])
+            
+        options.append("Back to Student List")
+        choice_manager.set_options(options)
         choice = choice_manager.get_user_choice()
 
         match choice.label():
@@ -229,7 +232,7 @@ def manage_single_student(current_account, student: dict, controller: ManageStud
 def manage_students_screen(current_account: Account, choice_manager: UserChoiceManager) -> None:
     header = colored(f"<== Manage Students ==>", "cyan", attrs=["bold"])
     controller = ManageStudentsController(current_account=current_account)
-
+        
     def get_student_records():
         student_records = []
 
@@ -287,6 +290,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored("You do not have permission to add students.", "red"))
                     enter_to_continue()
                     continue
+
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
                 student_id = ids[-1]
                 prefix, suffix = student_id.split("-")
