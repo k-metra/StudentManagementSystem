@@ -10,6 +10,7 @@ from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
 from termcolor import colored
 from utils.acronym import acronymize, decronymize
+from enums.permissions import Permissions
 import re
 
 def edit_guardian_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
@@ -120,7 +121,7 @@ def edit_student_info(student_id: str, student: dict, controller: ManageStudents
         enter_to_continue()
         return
 
-def manage_single_student(student: dict, controller: ManageStudentsController) -> None:
+def manage_single_student(current_account, student: dict, controller: ManageStudentsController) -> None:
     choice_manager = UserChoiceManager()
     # student_name = student.get("full_name", "Unknown Student")
     student_id = student.get("student_id", "")
@@ -181,17 +182,33 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
                 enter_to_continue()
                 return
             case "Edit Student Information":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 # Handle editing student information
                 updated_data = edit_student_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Edit Contact Information":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 # Handle editing contact information
                 updated_data = edit_contact_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Edit Guardian Information":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 updated_data = edit_guardian_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Delete Student":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 decision = input(colored(f"Are you sure you want to delete student '{student_name}' (ID: {student_id})? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
                     print(colored("Deletion aborted.", "cyan"))
@@ -239,7 +256,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
 
     def handle_student_select(selected_student: dict, item_id: int):
         # Handle student selection here
-        manage_single_student(selected_student, controller)
+        manage_single_student(current_account, selected_student, controller)
         return
 
 
@@ -266,6 +283,10 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
 
         match result:
             case "Add Student":
+                if not current_account.has_permission(Permissions.ADD_STUDENT):
+                    print(colored("You do not have permission to add students.", "red"))
+                    enter_to_continue()
+                    continue
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
                 student_id = ids[-1]
                 prefix, suffix = student_id.split("-")
