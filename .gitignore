@@ -1,4 +1,4 @@
 *.pyc
-
+venv
 extract_files.py
 project_structure.txt
