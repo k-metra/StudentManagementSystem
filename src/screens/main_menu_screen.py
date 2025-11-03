@@ -21,6 +21,9 @@ def main_menu_screen(current_account: Account, account_manager: AccountManager) 
 
         if current_account.has_permission(Permissions.EDIT_ACCOUNT):
             menu_options.append("Manage Accounts")
+
+        if current_account.has_permission(Permissions.VIEW_AUDIT_LOGS):
+            menu_options.append("View Audit Logs")
         
         menu_options.append("Logout")
         manager.set_options(menu_options)
@@ -55,6 +58,10 @@ def main_menu_screen(current_account: Account, account_manager: AccountManager) 
             case "Settings":
                 from screens import settings_screen
                 settings_screen(current_account, manager, account_manager)
+            case "View Audit Logs":
+                from screens import audit_logs_screen
+
+                audit_logs_screen(current_account, account_manager)
             case other:
                 print(f"You selected: {other}")
                 enter_to_continue()
