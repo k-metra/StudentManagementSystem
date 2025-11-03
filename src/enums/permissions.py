@@ -8,3 +8,4 @@ class Permissions(IntFlag):
     DELETE_ACCOUNT = auto()
     EDIT_ACCOUNT = auto()
     VIEW_REPORTS = auto()
+    VIEW_AUDIT_LOGS = auto()
