@@ -2,10 +2,13 @@ from datetime import datetime
 import json
 from dotenv import load_dotenv
 
+from classes.Account import Account
+
 import os
 
 from termcolor import colored
 
+from classes.Role import Role
 from utils.misc import enter_to_continue
 
 class AuditLogController():
@@ -32,19 +35,33 @@ class AuditLogController():
             enter_to_continue()
 
     
-    def add_log(self, action: str, performed_by: str, application_name: str, date: datetime | None = datetime.now() ) -> None:
+    def add_log(self, action: str, performed_by: str | Account, application_name: str, date: datetime | None = datetime.now(), role: str | None | Role = None ) -> None:
         '''
             Inserts a new log into audit logs.
 
             Parameters:
                 action (str): Name of the action (create, update, delete)
+                performed_by (str | Account): Username or Account object of the user who performed the action
+                role (str | Role, optional): Role name or Role object of the user who performed the action
                 application_name (str): Name of the application (Students, Accounts, etc)
                 date (datetime, optional): Date and time of the action. Defaults to current date and time.
         '''
+
+        if isinstance(performed_by, Account):
+            performed_by = performed_by.username
+        
+        if isinstance(role, Role):
+            role = role.name
+        elif role is None and isinstance(performed_by, Account):
+            role = performed_by.role.name
+        else:
+            role = "Unknown (parsing error)"
+
         log_entry = {
             "action": action,
             "performed_by": performed_by,
             "application_name": application_name,
+            "role": role,
             "date": date
         }
 
