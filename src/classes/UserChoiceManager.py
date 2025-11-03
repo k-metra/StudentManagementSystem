@@ -50,8 +50,8 @@ class UserChoiceManager:
         self.prompt = new_prompt
 
     def set_options(self, new_options=[]):
-        if len(new_options) <= 1:
-            raise ValueError("Options list cannot have less than two options.")
+        if len(new_options) < 1:
+            raise ValueError("Options list needs at least one option.")
         self.reset_selection()
         self.options = new_options
     
