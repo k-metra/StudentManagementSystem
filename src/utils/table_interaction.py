@@ -98,7 +98,7 @@ def handle_item_selection(table: TableDisplay, on_select_item: Callable):
     print()
     
     try:
-        item_id = input("Enter the ID of the item to select (0 to cancel): ")
+        item_id = input("Enter the ID of the item to select (0 to cancel): ").strip()
         item_id = int(item_id)
         
         if item_id == 0:
