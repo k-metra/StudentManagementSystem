@@ -37,9 +37,9 @@ class AuditLogController():
             Inserts a new log into audit logs.
 
             Parameters:
-            - action (str): Name of the action (create, update, delete)
-            - application_name (str): Name of the application (Students, Accounts, etc)
-            - date (datetime, optional): Date and time of the action. Defaults to current date and time.
+                action (str): Name of the action (create, update, delete)
+                application_name (str): Name of the application (Students, Accounts, etc)
+                date (datetime, optional): Date and time of the action. Defaults to current date and time.
         '''
         log_entry = {
             "action": action,
