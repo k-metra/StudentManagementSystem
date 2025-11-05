@@ -1,5 +1,6 @@
 from classes.AccountManager import AccountManager
 from classes.Account import Account 
+from controllers.AuditLogController import AuditLogController
 from enums.permissions import Permissions
 from roles import * # Import all roles
 from dotenv import load_dotenv
@@ -54,7 +55,17 @@ class ManageStudentsController:
             "department": dept
 
         }
+
         self.save_students()
+
+        AuditLogController().add_log(
+            action="Create",
+            performed_by=self.current_account,
+            application_name="Students",
+            object_id=student_id,
+            role=self.current_account.role
+        )
+
         return {"status": True, "message": f"Student '{student_id}' created successfully"}
     
     def bulk_import_students(self, excel_path: str) -> dict[str, str | bool]:
@@ -76,6 +87,13 @@ class ManageStudentsController:
             added.append(student_id)
 
         self.save_students()
+        AuditLogController().add_log(
+            action="Bulk Import",
+            performed_by=self.current_account,
+            application_name="Students",
+            object_id=", ".join(added),
+            role=self.current_account.role
+        )
 
         return {
             "status": True,
@@ -89,6 +107,15 @@ class ManageStudentsController:
 
         self.students[student_id] = {**self.students[student_id], **update_info}
         self.save_students()
+
+        AuditLogController().add_log(
+            action="Update",
+            performed_by=self.current_account,
+            application_name="Students",
+            object_id=student_id,
+            role=self.current_account.role
+        )
+
         return {"status": True, "message": f"Student '{student_id}' updated successfully."}
 
     def delete_student(self, student_id: str) -> dict[str, str | bool]:
@@ -97,6 +124,15 @@ class ManageStudentsController:
         
         del self.students[student_id]
         self.save_students()
+
+        AuditLogController().add_log(
+            action="Delete",
+            performed_by=self.current_account,
+            application_name="Students",
+            object_id=student_id,
+            role=self.current_account.role
+        )
+
         return {"status": True, "message": f"Student '{student_id}' deleted successfully."}
     
     
