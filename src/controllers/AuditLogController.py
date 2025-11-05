@@ -15,7 +15,7 @@ class AuditLogController():
     def __init__(self):
         self.logs = dict()
         load_dotenv()
-        self.DATA_FILE = os.getenv("AUDIT_LOG_DATA_FILE")
+        self.DATA_FILE = os.getenv("AUDIT_LOGS_DATA_FILE")
 
     def get_all_logs(self) -> list[dict]:
         return self.logs
