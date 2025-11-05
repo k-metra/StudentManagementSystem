@@ -64,7 +64,7 @@ class AuditLogController():
             "application_name": application_name,
             "object_id": str(object_id),
             "role": role,
-            "date": date
+            "date": str(date)
         }
 
         if os.getenv("DEBUG").lower() == "true":
