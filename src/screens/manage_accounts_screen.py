@@ -1,4 +1,4 @@
-from controllers import ManageAccountsController
+from controllers import AuditLogController, ManageAccountsController
 from utils.clear_console import clear_console
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
@@ -96,6 +96,13 @@ def create_new_account(current_account: Account, controller):
     
     if result.get("status"):
         print(colored(result.get("message"), "green"))
+        AuditLogController().add_log(
+            action="Create Account",
+            performed_by=current_account,
+            application_name="Accounts",
+            object_id=username,
+            role=current_account.role
+        )
     else:
         print(colored(result.get("error", "Failed to create account"), "red"))
     
@@ -155,25 +162,25 @@ def manage_single_account(current_account: Account, selected_account: dict, cont
                     enter_to_continue()
                     continue
 
-                change_account_password(username, controller)
+                change_account_password(username, current_account, controller)
             case "Change Role":
                 if not current_account.has_permission(Permissions.EDIT_ACCOUNT):
                     print(colored("You do not have permission to change account roles.", "red"))
                     enter_to_continue()
                     continue
 
-                change_account_role(username, controller)
+                change_account_role(username, current_account, controller)
             case "Delete Account":
                 if not current_account.has_permission(Permissions.DELETE_ACCOUNT):
                     print(colored("You do not have permission to delete accounts.", "red"))
                     enter_to_continue()
                     continue
-                if delete_account(username, controller):
+                if delete_account(username, current_account, controller):
                     return  # Account deleted, go back to list
             case "Back to Account List":
                 return
 
-def change_account_password(username: str, controller):
+def change_account_password(username: str, current_account: Account, controller):
     """Handle changing account password"""
     clear_console()
     print(colored(f"<== Change Password for {username} ==>", "cyan", attrs=["bold"]))
@@ -199,12 +206,19 @@ def change_account_password(username: str, controller):
     
     if result.get("status"):
         print(colored(result.get("message"), "green"))
+        AuditLogController().add_log(
+            action="Update Password",
+            performed_by=current_account,
+            application_name="Accounts",
+            object_id=username,
+            role=current_account.role
+        )
     else:
         print(colored(result.get("error", "Failed to update password"), "red"))
     
     enter_to_continue()
 
-def change_account_role(username: str, controller):
+def change_account_role(username: str, current_account: Account, controller):
     """Handle changing account role"""
     clear_console()
     print(colored(f"<== Change Role for {username} ==>", "cyan", attrs=["bold"]))
@@ -220,12 +234,19 @@ def change_account_role(username: str, controller):
     
     if result.get("status"):
         print(colored(result.get("message"), "green"))
+        AuditLogController().add_log(
+            action="Update Role",
+            performed_by=current_account,
+            application_name="Accounts",
+            object_id=username,
+            role=current_account.role
+        )
     else:
         print(colored(result.get("error", "Failed to update role"), "red"))
     
     enter_to_continue()
 
-def delete_account(username: str, controller) -> bool:
+def delete_account(username: str, current_account: Account, controller) -> bool:
     """Handle deleting account. Returns True if deleted, False otherwise"""
     clear_console()
     print(colored(f"<== Delete Account: {username} ==>", "cyan", attrs=["bold"]))
@@ -239,6 +260,13 @@ def delete_account(username: str, controller) -> bool:
         result = controller.delete_account(username=username)
         if result.get("status"):
             print(colored(result.get("message"), "green"))
+            AuditLogController().add_log(
+                action="Delete Account",
+                performed_by=current_account,
+                application_name="Accounts",
+                object_id=username,
+                role=current_account.role
+            )
             enter_to_continue()
             return True
         else:

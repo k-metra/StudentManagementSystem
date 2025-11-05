@@ -23,6 +23,30 @@
             "object_id": "1003-25",
             "role": "Admin",
             "date": "2025-11-05 17:53:16.037607"
+        },
+        "4": {
+            "action": "Create Account",
+            "performed_by": "admin",
+            "application_name": "Accounts",
+            "object_id": "Dude",
+            "role": "Admin",
+            "date": "2025-11-05 18:01:53.020261"
+        },
+        "5": {
+            "action": "Delete Account",
+            "performed_by": "admin",
+            "application_name": "Accounts",
+            "object_id": "Dude",
+            "role": "Admin",
+            "date": "2025-11-05 18:01:53.020261"
+        },
+        "6": {
+            "action": "Delete Account",
+            "performed_by": "admin",
+            "application_name": "Accounts",
+            "object_id": "lols",
+            "role": "Admin",
+            "date": "2025-11-05 18:01:53.020261"
         }
     }
 }
