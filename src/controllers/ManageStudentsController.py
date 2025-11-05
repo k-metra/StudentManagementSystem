@@ -65,21 +65,21 @@ class ManageStudentsController:
         
         self.refresh_students()
 
-        added, skipped = 0, 0
+        added, skipped = [], []
 
         for student_id, data in new_students.items():
             if student_id in self.students:
-                skipped += 1
+                skipped.append(student_id)
                 continue
             
             self.students[student_id] = data
-            added += 1
-        
+            added.append(student_id)
+
         self.save_students()
 
         return {
             "status": True,
-            "message": f"Bulk import completed. {added} students added, {skipped} (existing) students skipped."
+            "message": f"Bulk import completed. {len(added)} students added, {len(skipped)} (existing) students skipped."
         }
 
     
