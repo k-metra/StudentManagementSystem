@@ -7,10 +7,6 @@
         "staff": {
             "password": "$2b$12$XGES/zKfUU8P13hL2bPfCexrwhtXUMoSTCKxwjFDnsTyikAGFTYw2",
             "role": "Staff"
-        },
-        "lols": {
-            "password": "$2b$12$ruBfGcY0G5xzPwVKlD/6E.7lVRZ0FeXrKztpCcWY0WaeGMlV7aw8u",
-            "role": "Admin"
         }
     }
 }
