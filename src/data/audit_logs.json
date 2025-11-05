@@ -1,5 +1,28 @@
 {
-    "audit_logs": {
-        
+    "logs": {
+        "1": {
+            "action": "Bulk Import",
+            "performed_by": "admin",
+            "application_name": "Students",
+            "object_id": "1003-25, 1004-25",
+            "role": "Admin",
+            "date": "2025-11-05 17:49:55.447421"
+        },
+        "2": {
+            "action": "Delete",
+            "performed_by": "admin",
+            "application_name": "Students",
+            "object_id": "1004-25",
+            "role": "Admin",
+            "date": "2025-11-05 17:52:07.242751"
+        },
+        "3": {
+            "action": "Delete",
+            "performed_by": "admin",
+            "application_name": "Students",
+            "object_id": "1003-25",
+            "role": "Admin",
+            "date": "2025-11-05 17:53:16.037607"
+        }
     }
 }
