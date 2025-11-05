@@ -1,6 +1,8 @@
 import json
 
 def load_file(file_name, is_json=True, key=None):
+
+    # Wrap JSON parsing in try-except to handle malformed JSON or missing files 
     try:
         with open(file_name) as file:
 

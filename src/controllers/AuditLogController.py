@@ -44,7 +44,7 @@ class AuditLogController():
             enter_to_continue()
             return 
         
-        if os.getenv("DEBUG").lower() == "true":
+        if os.getenv("DEBUG", 'false').lower() == "true":
             print(colored("Audit logs saved successfully.", "green"))
             enter_to_continue()
 
@@ -81,7 +81,7 @@ class AuditLogController():
             "date": str(date)
         }
 
-        if os.getenv("DEBUG").lower() == "true":
+        if os.getenv("DEBUG", "false").lower() == "true":
             print(colored(f"Adding audit log: {log_entry}", "yellow"))
             enter_to_continue()
 
@@ -89,7 +89,7 @@ class AuditLogController():
 
         self.logs[str(len(self.logs) + 1)] = log_entry
 
-        if os.getenv("DEBUG").lower() == "true":
+        if os.getenv("DEBUG", "false").lower() == "true":
             print(colored(self.logs, "yellow"))
             enter_to_continue()
 
