@@ -17,7 +17,21 @@ class AuditLogController():
         load_dotenv()
         self.DATA_FILE = os.getenv("AUDIT_LOGS_DATA_FILE")
 
+    def refresh_logs(self) -> None:
+        try:
+            with open(self.DATA_FILE, "r", encoding="utf-8") as file:
+                data = json.load(file)
+                self.logs = data.get("logs", {})
+        
+        except FileNotFoundError:
+            print(colored("Audit log data file not found. Initializing empty logs.", "yellow"))
+            self.logs = {}
+            self.save_logs()
+            return
+
     def get_all_logs(self) -> list[dict]:
+        self.refresh_logs()
+
         return self.logs
     
     def save_logs(self) -> None:
@@ -71,5 +85,12 @@ class AuditLogController():
             print(colored(f"Adding audit log: {log_entry}", "yellow"))
             enter_to_continue()
 
+        self.refresh_logs()
+
         self.logs[str(len(self.logs) + 1)] = log_entry
+
+        if os.getenv("DEBUG").lower() == "true":
+            print(colored(self.logs, "yellow"))
+            enter_to_continue()
+
         self.save_logs()
