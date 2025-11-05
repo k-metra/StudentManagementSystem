@@ -61,16 +61,14 @@ class AuditLogController():
                 object_id (str | int): ID of the object being acted upon
                 date (datetime, optional): Date and time of the action. Defaults to current date and time.
         '''
-
-        if isinstance(performed_by, Account):
-            performed_by = performed_by.username
-        
         if isinstance(role, Role):
             role = role.name
-        elif role is None and isinstance(performed_by, Account):
-            role = performed_by.role.name
-        else:
-            role = "Unknown (parsing error)"
+
+        if isinstance(performed_by, Account):
+            if role is None:
+                role = performed_by.role.name if performed_by.role else "Unknown (no role assigned)"
+            performed_by = performed_by.username
+        
 
         log_entry = {
             "action": action,
