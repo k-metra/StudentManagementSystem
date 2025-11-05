@@ -98,8 +98,7 @@ def handle_item_selection(table: TableDisplay, on_select_item: Callable):
     print()
     
     try:
-        item_id = input("Enter the ID of the item to select (0 to cancel): ")
-        item_id = int(item_id)
+        item_id = int(input("Enter the ID of the item to select (0 to cancel): ").strip())
         
         if item_id == 0:
             return
@@ -118,7 +117,7 @@ def handle_item_selection(table: TableDisplay, on_select_item: Callable):
             print(colored("Invalid item ID.", "red"))
             enter_to_continue()
     except ValueError:
-        print(colored("Invalid input. Please enter a number.", "red"))
+        print(colored(f"Invalid input. Please enter a number.", "red"))
         enter_to_continue()
 
 def handle_go_to_page(table: TableDisplay):

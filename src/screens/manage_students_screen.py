@@ -4,11 +4,13 @@ from utils.clear_console import clear_console
 from classes.AccountManager import AccountManager
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
+from utils.file_dialog import select_file
 from utils.table_interaction import interactive_table
 from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
 from termcolor import colored
 from utils.acronym import acronymize, decronymize
+from enums.permissions import Permissions
 import re
 
 def edit_guardian_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
@@ -119,7 +121,7 @@ def edit_student_info(student_id: str, student: dict, controller: ManageStudents
         enter_to_continue()
         return
 
-def manage_single_student(student: dict, controller: ManageStudentsController) -> None:
+def manage_single_student(current_account, student: dict, controller: ManageStudentsController) -> None:
     choice_manager = UserChoiceManager()
     # student_name = student.get("full_name", "Unknown Student")
     student_id = student.get("student_id", "")
@@ -162,16 +164,19 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
         
         choice_manager.set_prompt("\n".join(header))
 
+        options = []
 
         # In the future we'll instead build the options one-by-one based on permissions
-        choice_manager.set_options([
-            "Edit Student Information",
-            "Edit Contact Information",
-            "Edit Guardian Information",
-            "Delete Student",
-            "Back to Student List"
-        ])
-
+        if current_account.has_permission(Permissions.EDIT_STUDENT):
+            options.extend([
+                "Edit Student Information",
+                "Edit Contact Information",
+                "Edit Guardian Information",
+                "Delete Student"
+            ])
+            
+        options.append("Back to Student List")
+        choice_manager.set_options(options)
         choice = choice_manager.get_user_choice()
 
         match choice.label():
@@ -180,17 +185,33 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
                 enter_to_continue()
                 return
             case "Edit Student Information":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 # Handle editing student information
                 updated_data = edit_student_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Edit Contact Information":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 # Handle editing contact information
                 updated_data = edit_contact_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Edit Guardian Information":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 updated_data = edit_guardian_info(student_id, student_data, controller, header)
                 student = updated_data if updated_data else student_data
             case "Delete Student":
+                if not current_account.has_permission(Permissions.EDIT_STUDENT):
+                    print(colored("You do not have permission to edit student information.", "red"))
+                    enter_to_continue()
+                    continue
                 decision = input(colored(f"Are you sure you want to delete student '{student_name}' (ID: {student_id})? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
                     print(colored("Deletion aborted.", "cyan"))
@@ -211,7 +232,7 @@ def manage_single_student(student: dict, controller: ManageStudentsController) -
 def manage_students_screen(current_account: Account, choice_manager: UserChoiceManager) -> None:
     header = colored(f"<== Manage Students ==>", "cyan", attrs=["bold"])
     controller = ManageStudentsController(current_account=current_account)
-
+        
     def get_student_records():
         student_records = []
 
@@ -238,7 +259,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
 
     def handle_student_select(selected_student: dict, item_id: int):
         # Handle student selection here
-        manage_single_student(selected_student, controller)
+        manage_single_student(current_account, selected_student, controller)
         return
 
 
@@ -259,12 +280,17 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
             columns=columns,
             title="Student Records",
             on_select_item=handle_student_select,
-            additional_options=["Add Student"],
+            additional_options=["Add Student", "Bulk Import"],
             items_per_page=10
         )
 
         match result:
             case "Add Student":
+                if not current_account.has_permission(Permissions.ADD_STUDENT):
+                    print(colored("You do not have permission to add students.", "red"))
+                    enter_to_continue()
+                    continue
+
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
                 student_id = ids[-1]
                 prefix, suffix = student_id.split("-")
@@ -316,23 +342,27 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                         guardian_contact = guardian_contact,
                         dept = dept
                     )
-                    
-                    
+            case "Bulk Import":
+                print("Select a file to import student records from.")
+                print("Columns should be: student_id, first_name, last_name, year_level, phone_number, course, home_address, email_address, guardian_name, guardian_contact, department")
+                file_path = select_file()
+
+                if not file_path:
+                    print(colored("No file selected. Bulk import aborted.", "red"))
+                    enter_to_continue()
+                    continue
+                
+                result = controller.bulk_import_students(file_path)
+
+                if result.get("status"):
+                    print(colored(result.get("message", result.get("message")), "green"))
+                else:
+                    print(colored(result.get("error", "An error occurred during bulk import."), "red"))
+
+                enter_to_continue()
+
             case None:
                 return
             case other:
                continue
-
-
-        #for student_record in student_records:
-
-        # choice_manager.set_prompt(new_prompt = prompt)
-        # choice_manager.set_options([
-        #     "View Students",
-        #     "Add Student",
-        #     "Update Student",
-        #     "Remove Student",
-        #     "Back to Main Menu"
-        # ])
-
 
