@@ -13,7 +13,7 @@ from utils.misc import enter_to_continue
 
 class AuditLogController():
     def __init__(self):
-        self.logs = []
+        self.logs = dict()
         load_dotenv()
         self.DATA_FILE = os.getenv("AUDIT_LOG_DATA_FILE")
 
@@ -69,5 +69,5 @@ class AuditLogController():
             print(colored(f"Adding audit log: {log_entry}", "yellow"))
             enter_to_continue()
 
-        self.logs.append(log_entry)
+        self.logs[str(len(self.logs) + 1)] = log_entry
         self.save_logs()
