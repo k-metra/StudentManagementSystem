@@ -17,7 +17,7 @@ def audit_logs_screen(current_account: Account, account_manager: AccountManager)
         enter_to_continue()
         return
 
-    header = colored(f"<== Manage Students ==>", "cyan", attrs=["bold"])
+    header = colored(f"<== Audit Logs ==>", "cyan", attrs=["bold"])
     controller = AuditLogController()
 
     def get_audit_logs():
