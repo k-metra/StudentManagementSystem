@@ -35,7 +35,7 @@ class AuditLogController():
             enter_to_continue()
 
     
-    def add_log(self, action: str, performed_by: str | Account, application_name: str, date: datetime | None = datetime.now(), role: str | None | Role = None ) -> None:
+    def add_log(self, action: str, performed_by: str | Account, application_name: str, object_id: str | int, date: datetime | None = datetime.now(), role: str | None | Role = None ) -> None:
         '''
             Inserts a new log into audit logs.
 
@@ -44,6 +44,7 @@ class AuditLogController():
                 performed_by (str | Account): Username or Account object of the user who performed the action
                 role (str | Role, optional): Role name or Role object of the user who performed the action
                 application_name (str): Name of the application (Students, Accounts, etc)
+                object_id (str | int): ID of the object being acted upon
                 date (datetime, optional): Date and time of the action. Defaults to current date and time.
         '''
 
@@ -61,6 +62,7 @@ class AuditLogController():
             "action": action,
             "performed_by": performed_by,
             "application_name": application_name,
+            "object_id": str(object_id),
             "role": role,
             "date": date
         }
