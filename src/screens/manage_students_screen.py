@@ -247,6 +247,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     "phone_number": data.get("phone_number", ""),
                     "year_level": data.get("year_level", ""),
                     "course": data.get("course", ""),
+                    "course_acronym": acronymize(data.get("course", "")),
                     "home_address": data.get("home_address", ""),
                     "email_address": data.get("email_address", ""),
                     "guardian_name": data.get("guardian_name", ""),
@@ -254,7 +255,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     "department": acronymize(data.get("department", "")) # Acronymize department name for compression
                 }
             )
-        
+
         return student_records
 
     def handle_student_select(selected_student: dict, item_id: int):
@@ -271,7 +272,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
             "student_id": "Student ID",
             "full_name": "Full Name",
             "year_level": "Year Level",
-            "course": "Course",
+            "course_acronym": "Course",
             "department": "Department"
         }
 
@@ -292,56 +293,55 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
 
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
-                student_id = ids[-1]
-                prefix, suffix = student_id.split("-")
-                prefix = int(prefix) + 1
-                new_student_id = f"{str(prefix)}-{suffix}"
+                if ids:
+                    last = ids[-1]
+                    try:
+                        prefix, suffix = last.split("-", 1)
+                        new_student_id = f"{int(prefix) + 1}-{suffix}"
+                    except Exception:
+                        new_student_id = input("Enter new Student ID (format YYYY-XX) or leave blank to use default 1001-25: ").strip() or "1001-25"
+                else:
+                    new_student_id = input("Enter new Student ID (format YYYY-XX) or leave blank to use default 1001-25: ").strip() or "1001-25"
 
-                # Handle adding a new student
-                colored(f"<== Adding Student: {new_student_id} ==>", "cyan", attrs=["bold"]),
-                first_name = input("First Name: ")
-                last_name = input("Last Name: ")
+                print(colored(f"<== Adding Student: {new_student_id} ==>", "cyan", attrs=["bold"]))
+                first_name = input("First Name: ").strip()
+                last_name = input("Last Name: ").strip()
                 try:
                     year_level = int(input("(Input only the number of year. i.e First year = 1) Year Level: "))
                 except ValueError:
-                    print(colored("Invalid input for year level. You must choose between year 1-4. Student creation aborted.", "red"))
+                    print(colored("Invalid input for year level. Student creation aborted.", "red"))
                     enter_to_continue()
                     continue
-                course = input("Course: ")
-                address = input("Home Address: ")
-                email = input("Email Address: ")
-                phone_number = input("Phone Number: ")
-                guardian_name = input("Guardian Name: ")
-                guardian_contact = input("Guardian Contact: ")
-                dept = input("Department: ")
+                course = input("Course: ").strip()
+                phone_number = input("Phone Number: ").strip()
 
-                colored(f"\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]),
+                # Confirm
+                print(colored("\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]))
                 print(f"First name: {first_name}")
                 print(f"Last name: {last_name}")
                 print(f"Year Level: {year_level}")
                 print(f"Course: {course}")
-                print(f"Home Address: {address}")
-                print(f"Email Address: {email}")
                 print(f"Phone Number: {phone_number}")
-                print(f"Guardian Name: {guardian_name}")
-                print(f"Guardian Contact: {guardian_contact}")
                 decision = input(colored("Is the information correct? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
                     print("Student Creation is aborted.")
+                    enter_to_continue()
+                    continue
+
+                result = controller.create_student(
+                    student_id=new_student_id,
+                    first_name=first_name,
+                    last_name=last_name,
+                    year_level=year_level,
+                    phone_number=phone_number,
+                    course=course
+                )
+                if result.get("status"):
+                    print(colored(f"Student '{first_name} {last_name}' added successfully (ID: {new_student_id}).", "green"))
                 else:
-                    controller.create_student(
-                        student_id=new_student_id,
-                        first_name=first_name,
-                        last_name=last_name,
-                        phone_number=phone_number,
-                        year_level=year_level,
-                        course=course,
-                        address=address,
-                        email=email,
-                        guardian_name = guardian_name,
-                        guardian_contact = guardian_contact,
-                        dept = dept
-                    )
+                    print(colored(f"Failed to add student: {result.get('error')}", "red"))
+                enter_to_continue()
+
             case "Bulk Import":
                 print("Select a file to import student records from.")
                 print("Columns should be: student_id, first_name, last_name, year_level, phone_number, course, home_address, email_address, guardian_name, guardian_contact, department")
@@ -351,7 +351,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored("No file selected. Bulk import aborted.", "red"))
                     enter_to_continue()
                     continue
-                
+
                 result = controller.bulk_import_students(file_path)
 
                 if result.get("status"):
@@ -364,5 +364,5 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
             case None:
                 return
             case other:
-               continue
+                continue
 
