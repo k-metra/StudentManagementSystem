@@ -1,0 +1,12 @@
+{
+    "departments":{
+        "College of Computer Studies": {
+            "Course 1":"Bachelor of Science in Information Technology",
+            "Course 2":"Bachelor of Science in Computer Science"
+        },
+        "College of Engineering": {
+            "Course 1":"Bachelor of Science in Civil Engineering",
+            "Course 2":"Bachelor of Science in Electrical Engineering"
+        },
+    }
+}
