@@ -320,6 +320,25 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 guardian_contact = input("Guardian Contact: ").strip()
                 department = input("Department: ").strip()
 
+
+
+                # Validate email and phone number formats
+                valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
+                valid_phone = re.match(r"^\+63\d{10}$", phone_number)
+                if not valid_email and not valid_phone:
+                    print(colored("Invalid email address and phone number format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+                if not valid_email:
+                    print(colored("Invalid email address format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+                if not valid_phone:
+                    print(colored("Invalid phone number format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+
+
                 # Confirm
                 print(colored("\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]))
                 print(f"First name: {first_name}")
