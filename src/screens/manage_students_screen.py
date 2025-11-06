@@ -313,11 +313,28 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     enter_to_continue()
                     continue
                 
+                # Validate email and phone number formats
+                valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
+                valid_phone = re.match(r"^\+63\d{10}$", phone_number)
+                valid_guardian_contact = re.match(r"^\+63\d{10}$", guardian_contact)
+
                 phone_number = input("Phone Number: ").strip()
+                if not valid_phone:
+                    print(colored("Invalid phone number format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
                 address = input("Home Address: ").strip()
                 email_address = input("Email Address: ").strip()
+                if not valid_email:
+                    print(colored("Invalid email address format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
                 guardian_name = input("Guardian Name: ").strip()
                 guardian_contact = input("Guardian Contact: ").strip()
+                if not valid_guardian_contact:
+                    print(colored("Invalid guardian contact format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
                 department = input("Department: ").strip()
                 
                  
@@ -339,28 +356,6 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 choice_manager.set_options(options)
                 course = choice_manager.get_user_choice().label()
 
-
-
-                # Validate email and phone number formats
-                valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
-                valid_phone = re.match(r"^\+63\d{10}$", phone_number)
-                valid_guardian_contact = re.match(r"^\+63\d{10}$", guardian_contact)
-                if not valid_email and not valid_phone and not valid_guardian_contact:
-                    print(colored("Invalid email address and phone number format. Student creation aborted.", "red"))
-                    enter_to_continue()
-                    continue
-                if not valid_email:
-                    print(colored("Invalid email address format. Student creation aborted.", "red"))
-                    enter_to_continue()
-                    continue
-                if not valid_phone:
-                    print(colored("Invalid phone number format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
-                    enter_to_continue()
-                    continue
-                if not valid_guardian_contact:
-                    print(colored("Invalid guardian contact format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
-                    enter_to_continue()
-                    continue
 
 
                 # Confirm
