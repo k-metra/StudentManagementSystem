@@ -314,6 +314,11 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
                 course = input("Course: ").strip()
                 phone_number = input("Phone Number: ").strip()
+                address = input("Home Address: ").strip()
+                email_address = input("Email Address: ").strip()
+                guardian_name = input("Guardian Name: ").strip()
+                guardian_contact = input("Guardian Contact: ").strip()
+                department = input("Department: ").strip()
 
                 # Confirm
                 print(colored("\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]))
@@ -322,19 +327,30 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 print(f"Year Level: {year_level}")
                 print(f"Course: {course}")
                 print(f"Phone Number: {phone_number}")
+                print(f"Home Address: {address}")
+                print(f"Email Address: {email_address}")
+                print(f"Guardian Name: {guardian_name}")
+                print(f"Guardian Contact: {guardian_contact}")
+                print(f"Department: {department}\n")
                 decision = input(colored("Is the information correct? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
                     print("Student Creation is aborted.")
                     enter_to_continue()
                     continue
 
+                # Map screen field names to the controller's parameter names
                 result = controller.create_student(
                     student_id=new_student_id,
                     first_name=first_name,
                     last_name=last_name,
                     year_level=year_level,
                     phone_number=phone_number,
-                    course=course
+                    course=course,
+                    address=address,
+                    email=email_address,
+                    guardian_name=guardian_name,
+                    guardian_contact=guardian_contact,
+                    dept=department
                 )
                 if result.get("status"):
                     print(colored(f"Student '{first_name} {last_name}' added successfully (ID: {new_student_id}).", "green"))
