@@ -19,5 +19,19 @@ def admin_role():
             ])
 
 @pytest.fixture
+def staff_role():
+    class Staff(Role):
+        def __init__(self):
+            super().__init__(name="Staff", permissions=[
+                Permissions.ADD_STUDENT,
+                Permissions.EDIT_STUDENT,
+                Permissions.VIEW_REPORTS
+            ])
+
+@pytest.fixture
 def admin_account(admin_role):
     return Account(username="admin", password="adminpass", role=admin_role)
+
+@pytest.fixture
+def staff_account(staff_role):
+    return Account(username="staff", password="staffpass", role=staff_role)
