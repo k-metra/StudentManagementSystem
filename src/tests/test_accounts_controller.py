@@ -43,3 +43,10 @@ def test_create_account_fail(monkeypatch):
 
     result = controller.create_account("newuser", "newpass", "Admin")
     assert result["status"] is False
+
+def test_delete_account_fail(staff_account):
+    controller = ManageAccountsController(staff_account)
+    controller.accounts = {"user1": {"password": "123", "role": "Staff"}}
+
+    result = controller.delete_account("nonexistentuser")
+    assert result["status"] is False
