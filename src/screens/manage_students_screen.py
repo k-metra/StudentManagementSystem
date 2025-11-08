@@ -5,6 +5,7 @@ from classes.AccountManager import AccountManager
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
 from utils.file_dialog import select_file
+from utils.regex import format_phone, validate_phone
 from utils.table_interaction import interactive_table
 from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
@@ -318,12 +319,30 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
                 
                 # Validate email and phone number formats
-                phone_number = input("Phone Number: ").strip()
-                valid_phone = re.match(r"^\+63\d{10}$", phone_number)
+                # NOTE: Refactored format. Initial area code is no longer required since we auto-add +63
+                # We use re.sub to remove the any leading zeroes or the country code if the user inputs them
+                phone_number = input("Phone Number: +63 ").strip()
+
+                # we also want to allow OPTIONAL spaces in between the digits for better readability
+                valid_phone = validate_phone(phone_number)
+
+                valid_formats = [
+                    "+63 993 992 8496",
+                    "+639939928496",
+                    "09939928496",
+                    "993 992 8496",
+                    "0993 992 8496",
+                    "9939928496",
+                ]
+
                 if not valid_phone:
-                    print(colored("Invalid phone number format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
+                    print(colored("Invalid phone number format. Valid formats include: \n-" + "\n-".join(valid_formats) + "\n\nStudent creation aborted.", "red"))
                     enter_to_continue()
                     continue
+
+                # we reformat the phone number only AFTER it passes regular expression checks
+                phone_number = format_phone(re.sub(r"^(?:\+63|0)", "+63 ", phone_number))
+
                 address = input("Home Address: ").strip()
                 email_address = input("Email Address: ").strip()
                 valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
@@ -332,16 +351,17 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     enter_to_continue()
                     continue
                 guardian_name = input("Guardian Name: ").strip()
-                guardian_contact = input("Guardian Contact: ").strip()
-                valid_guardian_contact = re.match(r"^\+63\d{10}$", guardian_contact)
+                guardian_contact = input("Guardian Contact: +63 ").strip()
+                valid_guardian_contact = validate_phone(guardian_contact)
+
+
                 if not valid_guardian_contact:
-                    print(colored("Invalid guardian contact format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
+                    print(colored("Invalid guardian contact format. Valid formats include: \n- " + "\n- ".join(valid_formats) + "\n\nStudent creation aborted.", "red"))
                     enter_to_continue()
                     continue
-                
 
-                
-                 
+                guardian_contact = format_phone(re.sub(r"^(?:\+63|0)", "+63 ", guardian_contact))
+
                 choice_manager.set_prompt(header)
 
                 # Build course options from the departments data (values are lists)
