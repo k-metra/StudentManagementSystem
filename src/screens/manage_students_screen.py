@@ -341,7 +341,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
 
                 # we reformat the phone number only AFTER it passes regular expression checks
-                phone_number = format_phone(re.sub(r"^(?:\+63|0)", "+63 ", phone_number))
+                phone_number = format_phone(phone_number)
 
                 address = input("Home Address: ").strip()
                 email_address = input("Email Address: ").strip()
@@ -360,7 +360,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     enter_to_continue()
                     continue
 
-                guardian_contact = format_phone(re.sub(r"^(?:\+63|0)", "+63 ", guardian_contact))
+                guardian_contact = format_phone(guardian_contact)
 
                 choice_manager.set_prompt(header)
 
