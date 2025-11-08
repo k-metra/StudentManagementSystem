@@ -1,12 +1,29 @@
 {
-    "departments":{
+    "departments": {
         "College of Computer Studies": {
-            "Course 1":"Bachelor of Science in Information Technology",
-            "Course 2":"Bachelor of Science in Computer Science"
+            "Course 1": "Bachelor of Science in Information Technology",
+            "Course 2": "Bachelor of Science in Computer Science",
+            "Course 3": "Diploma in Computer Technology"
         },
         "College of Engineering": {
-            "Course 1":"Bachelor of Science in Civil Engineering",
-            "Course 2":"Bachelor of Science in Electrical Engineering"
+            "Course 1": "Bachelor of Science in Civil Engineering"
         },
+        "College of Arts and Sciences": {},
+        "College of Business Management": {
+            "Course 1": "Bachelor of Science in Business Administration"
+        },
+        "College of Law": {
+            "Course 1": "Bachelor of Laws"
+        },
+        "College of Criminal Justice": {
+            "Course 1": "Bachelor of Science in Criminology"
+        },
+        "College of Tourism and Hospitality Management": {
+            "Course 1": "Bachelor of Science in Tourism Management",
+            "Course 2": "Bachelor of Science in Hotel and Restaurant Management"
+        },
+        "College of Education": {
+            "Course 1": "Bachelor of Science in Education"
+        }
     }
 }
