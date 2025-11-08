@@ -50,3 +50,10 @@ def test_delete_account_fail(staff_account):
 
     result = controller.delete_account("nonexistentuser")
     assert result["status"] is False
+
+def test_delete_account_success(admin_account):
+    controller = ManageAccountsController(admin_account)
+    controller.accounts = {**controller.accounts, "theleastpossibleusernamebecausewhoispickingthisforausernameitsreallylongandpluswehaveusernameconstraintsaswellasthefactthatthisisntanactualprogramsonooneelseisusingit": {"password": "123", "role": "Staff"}}
+
+    result = controller.delete_account("theleastpossibleusernamebecausewhoispickingthisforausernameitsreallylongandpluswehaveusernameconstraintsaswellasthefactthatthisisntanactualprogramsonooneelseisusingit")
+    assert result["status"] is True
