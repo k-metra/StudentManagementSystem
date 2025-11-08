@@ -18,6 +18,8 @@ def admin_role():
                 Permissions.VIEW_REPORTS
             ])
 
+    return Admin()
+
 @pytest.fixture
 def staff_role():
     class Staff(Role):
@@ -27,6 +29,8 @@ def staff_role():
                 Permissions.EDIT_STUDENT,
                 Permissions.VIEW_REPORTS
             ])
+
+    return Staff()
 
 @pytest.fixture
 def admin_account(admin_role):
