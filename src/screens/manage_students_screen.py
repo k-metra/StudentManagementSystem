@@ -11,8 +11,9 @@ from utils.misc import clear_input_buffer
 from termcolor import colored
 from utils.acronym import acronymize, decronymize
 from enums.permissions import Permissions
-import re
 
+import re
+import json
 def edit_guardian_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
     student_info = controller.get_all_students().get(student_id, {})
     clear_console() 
@@ -291,6 +292,9 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored("You do not have permission to add students.", "red"))
                     enter_to_continue()
                     continue
+                data = json.load(open("src/data/departments.json", "r"))
+                departments = data.get("departments", {})
+
 
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
                 if ids:
@@ -314,49 +318,58 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
                 
                 # Validate email and phone number formats
-                valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
-                valid_phone = re.match(r"^\+63\d{10}$", phone_number)
-                valid_guardian_contact = re.match(r"^\+63\d{10}$", guardian_contact)
-
                 phone_number = input("Phone Number: ").strip()
+                valid_phone = re.match(r"^\+63\d{10}$", phone_number)
                 if not valid_phone:
                     print(colored("Invalid phone number format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
                     enter_to_continue()
                     continue
                 address = input("Home Address: ").strip()
                 email_address = input("Email Address: ").strip()
+                valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
                 if not valid_email:
                     print(colored("Invalid email address format. Student creation aborted.", "red"))
                     enter_to_continue()
                     continue
                 guardian_name = input("Guardian Name: ").strip()
                 guardian_contact = input("Guardian Contact: ").strip()
+                valid_guardian_contact = re.match(r"^\+63\d{10}$", guardian_contact)
                 if not valid_guardian_contact:
                     print(colored("Invalid guardian contact format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
                     enter_to_continue()
                     continue
-                department = input("Department: ").strip()
+                
+
                 
                  
-                choice_manager.set_prompt((header))
+                choice_manager.set_prompt(header)
 
-                options = []                
-                options.extend([
-                        "Bachelor of Science in Information Technology",
-                        "Bachelor of Science in Computer Science",
-                        "Bachelor of Science in Business Administration",
-                        "Bachelor of Science in Education",
-                        "Bachelor of Science in Tourism Management",
-                        "Bachelor of Science in Civil Engineering",
-                        "Bachelor of Science in Criminology",
-                        "Bachelor of Laws",
-                        "Doctor of Medicine",
-                        "Diploma in Computer Technology"
-                    ])
-                choice_manager.set_options(options)
+                # Build course options from the departments data (values are lists)
+                options = []
+                for dept_name, courses in departments.items():
+                    # `courses` is a list of course names in departments.json
+                    options.extend(courses)
+
+                # Remove duplicates while preserving order
+                seen = set()
+                deduped_options = []
+                for c in options:
+                    if c not in seen:
+                        deduped_options.append(c)
+                        seen.add(c)
+
+                choice_manager.set_options(deduped_options)
                 course = choice_manager.get_user_choice().label()
 
-
+                # Find the department that contains the selected course
+                department = None
+                for dept_name, courses in departments.items():
+                    if course in courses:
+                        department = dept_name
+                        break
+                if department is None:
+                    # fallback if mapping not found
+                    department = ""
 
                 # Confirm
                 print(colored("\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]))
