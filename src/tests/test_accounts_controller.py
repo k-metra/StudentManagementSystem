@@ -48,8 +48,15 @@ def test_delete_account_fail(staff_account):
     controller = ManageAccountsController(staff_account)
     controller.accounts = {"user1": {"password": "123", "role": "Staff"}}
 
-    result = controller.delete_account("nonexistentuser")
+    result = controller.delete_account("nonexistent")
     assert result["status"] is False
+
+def test_delete_account_permission_fail(staff_account):
+    controller = ManageAccountsController(staff_account)
+    controller.accounts = {**controller.accounts, "user1": {"password": "123", "role": "Staff"}}
+
+    result = controller.delete_account("user1")
+    assert result["status"] is False and result["error"] == "You do not have permission to delete accounts."
 
 def test_delete_account_success(admin_account):
     controller = ManageAccountsController(admin_account)
