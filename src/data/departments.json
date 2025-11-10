@@ -1,0 +1,31 @@
+{
+    "departments": {
+        "College of Computer Studies": [
+            "Bachelor of Science in Information Technology",
+            "Bachelor of Science in Computer Science",
+            "Diploma in Computer Technology"
+        ],
+        "College of Engineering": [
+            "Bachelor of Science in Civil Engineering"
+        ],
+        "College of Arts and Sciences": [
+            
+        ],
+        "College of Business Management": [
+            "Bachelor of Science in Business Administration"
+        ],
+        "College of Law": [
+            "Bachelor of Laws"
+        ],
+        "College of Criminal Justice": [
+            "Bachelor of Science in Criminology"
+        ],
+        "College of Tourism and Hospitality Management": [
+            "Bachelor of Science in Tourism Management",
+            "Bachelor of Science in Hotel and Restaurant Management"
+        ],
+        "College of Education": [
+            "Bachelor of Science in Education"
+        ]
+    }
+}

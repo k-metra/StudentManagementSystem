@@ -24,20 +24,13 @@ def main() -> None:
     while True:
         if current_account is None:
             from screens import entry_screen
-
-
             # "entry_screen" will either return:
             # An account if the user logs in
             # 'None' if the user chooses to exit the application
             current_account = entry_screen(account_manager)
-
             if current_account is None:
                 break
-
             continue
-        
-
-
         from screens import main_menu_screen
         main_menu_screen(current_account, account_manager)
         current_account = None

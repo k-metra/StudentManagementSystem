@@ -5,14 +5,16 @@ from classes.AccountManager import AccountManager
 from classes.Account import Account
 from classes.UserChoiceManager import UserChoiceManager
 from utils.file_dialog import select_file
+from utils.regex import format_phone, validate_phone
 from utils.table_interaction import interactive_table
 from utils.misc import enter_to_continue
 from utils.misc import clear_input_buffer
 from termcolor import colored
 from utils.acronym import acronymize, decronymize
 from enums.permissions import Permissions
-import re
 
+import re
+import json
 def edit_guardian_info(student_id: str, student: dict, controller: ManageStudentsController, header: list) -> dict | None:
     student_info = controller.get_all_students().get(student_id, {})
     clear_console() 
@@ -93,20 +95,111 @@ def edit_student_info(student_id: str, student: dict, controller: ManageStudents
     print("\n".join(header))
     print(colored("== Edit Student Information ==\n", "white", attrs=["bold"]))
     print("Leave a field blank to keep the current value.\n")
+    # Names
     first_name = input(f"First Name [{student.get('first_name', '')}]: ").strip()
     last_name = input(f"Last Name [{student.get('last_name', '')}]: ").strip()
-    course = input(f"Course [{student.get('course', '')}]: ").strip()
-    year_level_input = input(f"Year Level [{student.get('year_level', '')}]: ").strip()
-    department = input(f"Department [{student.get('department', '')}]: ").strip()
 
+    # Year level (number) - keep current if blank
+    year_level_input = input(f"(Input only the number of year. i.e First year = 1) Year Level [{student.get('year_level', '')}]: ").strip()
+    if year_level_input:
+        try:
+            year_level = int(year_level_input)
+        except ValueError:
+            print(colored("Invalid input for year level. Update aborted.", "red"))
+            enter_to_continue()
+            return
+    else:
+        year_level = student.get('year_level', '')
+
+    # Phone and email: allow blank to keep current, otherwise validate and format
+    phone_input = input(f"Phone Number [{student.get('phone_number', '')}]: ").strip()
+    if phone_input:
+        if not validate_phone(phone_input):
+            print(colored("Invalid phone number format. Update aborted.", "red"))
+            enter_to_continue()
+            return
+        phone_number = format_phone(phone_input)
+    else:
+        phone_number = student.get('phone_number', '')
+
+    email_input = input(f"Email Address [{student.get('email_address', '')}]: ").strip()
+    if email_input:
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_input):
+            print(colored("Invalid email address format. Update aborted.", "red"))
+            enter_to_continue()
+            return
+        email_address = email_input
+    else:
+        email_address = student.get('email_address', '')
+
+    # Guardian info
+    guardian_name = input(f"Guardian Name [{student.get('guardian_name', '')}]: ").strip()
+    guardian_contact_input = input(f"Guardian Contact [{student.get('guardian_contact', '')}]: ").strip()
+    if guardian_contact_input:
+        if not validate_phone(guardian_contact_input):
+            print(colored("Invalid guardian contact format. Update aborted.", "red"))
+            enter_to_continue()
+            return
+        guardian_contact = format_phone(guardian_contact_input)
+    else:
+        guardian_contact = student.get('guardian_contact', '')
+
+    # Course selection using UserChoiceManager and departments.json (auto-determine department)
+    choice_manager = UserChoiceManager()
+    data = json.load(open("src/data/departments.json", "r"))
+    departments = data.get("departments", {})
+
+    # Build options
+    options = []
+    for dept_name, courses in departments.items():
+        options.extend(courses)
+
+    # Deduplicate while preserving order
+    seen = set()
+    deduped_options = []
+    for c in options:
+        if c not in seen:
+            deduped_options.append(c)
+            seen.add(c)
+
+    # Prepend an option to keep current course
+    current_course = student.get('course', '')
+    keep_option = f"Keep current course ({current_course})" if current_course else "Keep current course"
+    choice_manager.set_prompt(header)
+    choice_manager.set_options([keep_option] + deduped_options)
+    selected = choice_manager.get_user_choice().label()
+
+    if selected != keep_option:
+        course = selected
+        # find department
+        department = None
+        for dept_name, courses in departments.items():
+            if course in courses:
+                department = dept_name
+                break
+        if department is None:
+            department = student.get('department', '')
+    else:
+        course = student.get('course', '')
+        department = student.get('department', '')
+
+    # Apply changes to student_info
     if first_name:
         student_info['first_name'] = first_name
     if last_name:
         student_info['last_name'] = last_name
+    if year_level != '':
+        student_info['year_level'] = year_level
+    if phone_number:
+        student_info['phone_number'] = phone_number
+    if email_address:
+        student_info['email_address'] = email_address
+    if guardian_name:
+        student_info['guardian_name'] = guardian_name
+    if guardian_contact:
+        student_info['guardian_contact'] = guardian_contact
     if course:
         student_info['course'] = course
-    if year_level_input:
-        student_info['year_level'] = year_level_input
     if department:
         student_info['department'] = department
 
@@ -291,6 +384,9 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored("You do not have permission to add students.", "red"))
                     enter_to_continue()
                     continue
+                data = json.load(open("src/data/departments.json", "r"))
+                departments = data.get("departments", {})
+
 
                 ids = [r.get("student_id") for r in student_records if r.get("student_id")]
                 if ids:
@@ -312,8 +408,79 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     print(colored("Invalid input for year level. Student creation aborted.", "red"))
                     enter_to_continue()
                     continue
-                course = input("Course: ").strip()
-                phone_number = input("Phone Number: ").strip()
+                
+                # Validate email and phone number formats
+                # NOTE: Refactored format. Initial area code is no longer required since we auto-add +63
+                # We accept several human-friendly formats and normalize them with utils.regex
+                phone_number = input("Phone Number: +63 ").strip()
+
+                # Allow optional spaces and a variety of local/country formats
+                valid_phone = validate_phone(phone_number)
+
+                valid_formats = [
+                    "+63 993 992 8496",
+                    "+639939928496",
+                    "09939928496",
+                    "993 992 8496",
+                    "0993 992 8496",
+                    "9939928496",
+                ]
+
+                if not valid_phone:
+                    print(colored("Invalid phone number format. Valid formats include: \n-" + "\n-".join(valid_formats) + "\n\nStudent creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+
+                # we reformat the phone number only AFTER it passes regular expression checks
+                phone_number = format_phone(phone_number)
+
+                address = input("Home Address: ").strip()
+                email_address = input("Email Address: ").strip()
+                valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_address)
+                if not valid_email:
+                    print(colored("Invalid email address format. Student creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+                guardian_name = input("Guardian Name: ").strip()
+                guardian_contact = input("Guardian Contact: +63 ").strip()
+                valid_guardian_contact = validate_phone(guardian_contact)
+
+
+                if not valid_guardian_contact:
+                    print(colored("Invalid guardian contact format. Valid formats include: \n- " + "\n- ".join(valid_formats) + "\n\nStudent creation aborted.", "red"))
+                    enter_to_continue()
+                    continue
+
+                guardian_contact = format_phone(guardian_contact)
+
+                choice_manager.set_prompt(header)
+
+                # Build course options from the departments data (values are lists)
+                options = []
+                for dept_name, courses in departments.items():
+                    # `courses` is a list of course names in departments.json
+                    options.extend(courses)
+
+                # Remove duplicates while preserving order
+                seen = set()
+                deduped_options = []
+                for c in options:
+                    if c not in seen:
+                        deduped_options.append(c)
+                        seen.add(c)
+
+                choice_manager.set_options(deduped_options)
+                course = choice_manager.get_user_choice().label()
+
+                # Find the department that contains the selected course
+                department = None
+                for dept_name, courses in departments.items():
+                    if course in courses:
+                        department = dept_name
+                        break
+                if department is None:
+                    # fallback if mapping not found
+                    department = ""
 
                 # Confirm
                 print(colored("\n\n<== Confirm Student Information ==>", "cyan", attrs=["bold"]))
@@ -322,19 +489,30 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                 print(f"Year Level: {year_level}")
                 print(f"Course: {course}")
                 print(f"Phone Number: {phone_number}")
+                print(f"Home Address: {address}")
+                print(f"Email Address: {email_address}")
+                print(f"Guardian Name: {guardian_name}")
+                print(f"Guardian Contact: {guardian_contact}")
+                print(f"Department: {department}\n")
                 decision = input(colored("Is the information correct? (y/n): ", "yellow")).strip().lower()
                 if decision != 'y':
                     print("Student Creation is aborted.")
                     enter_to_continue()
                     continue
 
+                # Map screen field names to the controller's parameter names
                 result = controller.create_student(
                     student_id=new_student_id,
                     first_name=first_name,
                     last_name=last_name,
                     year_level=year_level,
                     phone_number=phone_number,
-                    course=course
+                    course=course,
+                    address=address,
+                    email=email_address,
+                    guardian_name=guardian_name,
+                    guardian_contact=guardian_contact,
+                    dept=department
                 )
                 if result.get("status"):
                     print(colored(f"Student '{first_name} {last_name}' added successfully (ID: {new_student_id}).", "green"))
