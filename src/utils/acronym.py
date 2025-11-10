@@ -34,6 +34,7 @@ def decronymize(acronym: str, mapping: dict | None = None) -> str:
         "LLB":      "Bachelor of Laws",
         "MD":       "Doctor of Medicine",
         "DICT":     "Diploma in Computer Technology",
+        "BSHRM":    "Bachelor of Science in Hotel and Restaurant Management",
     }
 
     return mapping.get(acronym.upper(), acronym)

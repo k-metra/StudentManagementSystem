@@ -318,7 +318,7 @@ def manage_students_screen(current_account: Account, choice_manager: UserChoiceM
                     continue
                 
                 # Validate email and phone number formats
-                phone_number = input("Phone Number: ").strip()
+                phone_number = input("Phone Number (in +63 format): ").strip()
                 valid_phone = re.match(r"^\+63\d{10}$", phone_number)
                 if not valid_phone:
                     print(colored("Invalid phone number format. Use +63XXXXXXXXXX format. Student creation aborted.", "red"))
