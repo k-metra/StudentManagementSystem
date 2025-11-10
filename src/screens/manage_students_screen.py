@@ -95,20 +95,111 @@ def edit_student_info(student_id: str, student: dict, controller: ManageStudents
     print("\n".join(header))
     print(colored("== Edit Student Information ==\n", "white", attrs=["bold"]))
     print("Leave a field blank to keep the current value.\n")
+    # Names
     first_name = input(f"First Name [{student.get('first_name', '')}]: ").strip()
     last_name = input(f"Last Name [{student.get('last_name', '')}]: ").strip()
-    course = input(f"Course [{student.get('course', '')}]: ").strip()
-    year_level_input = input(f"Year Level [{student.get('year_level', '')}]: ").strip()
-    department = input(f"Department [{student.get('department', '')}]: ").strip()
 
+    # Year level (number) - keep current if blank
+    year_level_input = input(f"(Input only the number of year. i.e First year = 1) Year Level [{student.get('year_level', '')}]: ").strip()
+    if year_level_input:
+        try:
+            year_level = int(year_level_input)
+        except ValueError:
+            print(colored("Invalid input for year level. Update aborted.", "red"))
+            enter_to_continue()
+            return
+    else:
+        year_level = student.get('year_level', '')
+
+    # Phone and email: allow blank to keep current, otherwise validate and format
+    phone_input = input(f"Phone Number [{student.get('phone_number', '')}]: ").strip()
+    if phone_input:
+        if not validate_phone(phone_input):
+            print(colored("Invalid phone number format. Update aborted.", "red"))
+            enter_to_continue()
+            return
+        phone_number = format_phone(phone_input)
+    else:
+        phone_number = student.get('phone_number', '')
+
+    email_input = input(f"Email Address [{student.get('email_address', '')}]: ").strip()
+    if email_input:
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email_input):
+            print(colored("Invalid email address format. Update aborted.", "red"))
+            enter_to_continue()
+            return
+        email_address = email_input
+    else:
+        email_address = student.get('email_address', '')
+
+    # Guardian info
+    guardian_name = input(f"Guardian Name [{student.get('guardian_name', '')}]: ").strip()
+    guardian_contact_input = input(f"Guardian Contact [{student.get('guardian_contact', '')}]: ").strip()
+    if guardian_contact_input:
+        if not validate_phone(guardian_contact_input):
+            print(colored("Invalid guardian contact format. Update aborted.", "red"))
+            enter_to_continue()
+            return
+        guardian_contact = format_phone(guardian_contact_input)
+    else:
+        guardian_contact = student.get('guardian_contact', '')
+
+    # Course selection using UserChoiceManager and departments.json (auto-determine department)
+    choice_manager = UserChoiceManager()
+    data = json.load(open("src/data/departments.json", "r"))
+    departments = data.get("departments", {})
+
+    # Build options
+    options = []
+    for dept_name, courses in departments.items():
+        options.extend(courses)
+
+    # Deduplicate while preserving order
+    seen = set()
+    deduped_options = []
+    for c in options:
+        if c not in seen:
+            deduped_options.append(c)
+            seen.add(c)
+
+    # Prepend an option to keep current course
+    current_course = student.get('course', '')
+    keep_option = f"Keep current course ({current_course})" if current_course else "Keep current course"
+    choice_manager.set_prompt(header)
+    choice_manager.set_options([keep_option] + deduped_options)
+    selected = choice_manager.get_user_choice().label()
+
+    if selected != keep_option:
+        course = selected
+        # find department
+        department = None
+        for dept_name, courses in departments.items():
+            if course in courses:
+                department = dept_name
+                break
+        if department is None:
+            department = student.get('department', '')
+    else:
+        course = student.get('course', '')
+        department = student.get('department', '')
+
+    # Apply changes to student_info
     if first_name:
         student_info['first_name'] = first_name
     if last_name:
         student_info['last_name'] = last_name
+    if year_level != '':
+        student_info['year_level'] = year_level
+    if phone_number:
+        student_info['phone_number'] = phone_number
+    if email_address:
+        student_info['email_address'] = email_address
+    if guardian_name:
+        student_info['guardian_name'] = guardian_name
+    if guardian_contact:
+        student_info['guardian_contact'] = guardian_contact
     if course:
         student_info['course'] = course
-    if year_level_input:
-        student_info['year_level'] = year_level_input
     if department:
         student_info['department'] = department
 
