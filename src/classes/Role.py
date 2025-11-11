@@ -7,9 +7,10 @@ class Role():
         super().__init_subclass__(**kwargs)
         Role.registry[cls.__name__] = cls
 
-    def __init__(self, name=None, permissions=None):
+    def __init__(self, name=None, permissions=None, level: int = 0):
         self.name = name or self.__class__.__name__
         self.permissions = permissions or []
+        self.level = level
 
     def has_permission(self, permission):
         return permission in self.permissions
