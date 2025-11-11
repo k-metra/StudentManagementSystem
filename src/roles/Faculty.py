@@ -3,4 +3,4 @@ from enums.permissions import Permissions
 
 class Faculty(Role):
     def __init__(self):
-        super().__init__(permissions=[])
+        super().__init__(permissions=[], level=5)
