@@ -30,6 +30,19 @@ class ManageAccountsController:
         with open(self.DATA_FILE, "w", encoding="utf-8") as file:
             json.dump({"accounts": self.accounts}, file, indent=4)
 
+    def get_account_role_level(self, username: str) -> int | None:
+        account_data = self.accounts.get(username)
+        if not account_data:
+            return None
+        
+        role_name = account_data.get("role")
+        role_class = self.account_manager.get_role_from_registry(role_name)
+        if not role_class:
+            return None
+        
+        role_instance = role_class()
+        return role_instance.level
+
     # ---------------
     # CRUD Operations
     # ---------------

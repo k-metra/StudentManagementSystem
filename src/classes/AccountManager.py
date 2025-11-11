@@ -26,6 +26,12 @@ class AccountManager:
         
         return self._accounts
     
+    def get_role_from_registry(self, role_name: str) -> Role | None:
+        role_class = self._role_registry.get(role_name)
+        if role_class:
+            return role_class()
+        return None
+    
     def get_account(self, username: str, password: str | None = None, role: str | None = None) -> dict[str, str] | None:
         if self._accounts is None:
             self.load_accounts()
