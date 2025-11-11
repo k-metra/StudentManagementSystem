@@ -1,3 +1,4 @@
+from classes.Role import Role
 from classes.AccountManager import AccountManager
 from classes.Account import Account 
 from enums.permissions import Permissions
@@ -29,6 +30,9 @@ class ManageAccountsController:
     def save_accounts(self):
         with open(self.DATA_FILE, "w", encoding="utf-8") as file:
             json.dump({"accounts": self.accounts}, file, indent=4)
+
+    def get_role_registry(self) -> dict[str, Role]:
+        return self.account_manager._role_registry
 
     def get_account_role_level(self, username: str) -> int | None:
         account_data = self.accounts.get(username)
