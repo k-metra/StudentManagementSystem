@@ -8,4 +8,4 @@ class Registrar(Role):
             Permissions.EDIT_STUDENT,
             Permissions.DELETE_STUDENT,
             Permissions.VIEW_REPORTS,
-        ])  
+        ], level=6)  
