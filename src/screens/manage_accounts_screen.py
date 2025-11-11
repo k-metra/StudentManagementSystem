@@ -33,7 +33,7 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
         for username, data in controller.get_all_accounts().items():
             accounts_data.append({
                 "username": username,
-                "role": data.get("role", "Unknown"),
+                "role": controller.get_role_from_registry(data.get("role", "Unknown")).name if controller.get_role_from_registry(data.get("role", "Unknown")) else "Unknown",
                 "password": "••••••••"  # Hidden for security
             })
         
