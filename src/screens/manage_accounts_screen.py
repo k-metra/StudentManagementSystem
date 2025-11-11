@@ -10,6 +10,18 @@ from termcolor import colored
 from enums.permissions import Permissions
 import pwinput
 
+def sort_role_by_level(roles: list[str], controller: ManageAccountsController) -> list[str]:
+
+    role_level_mapping: dict[str, int] = dict()
+
+    for role in controller.get_role_registry().values():
+        role_instance = role()
+        level = role_instance.level or 0
+        name = role_instance.name
+        role_level_mapping[name] = level
+
+    return sorted(roles, key=lambda r: role_level_mapping.get(r, 0), reverse=True)
+
 def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceManager) -> None:
     controller = ManageAccountsController(current_account=current_account)
     
@@ -60,7 +72,7 @@ def manage_accounts_screen(current_account: Account, choice_manager: UserChoiceM
         elif result == "Create New Account":
             create_new_account(current_account, controller)
 
-def create_new_account(current_account: Account, controller):
+def create_new_account(current_account: Account, controller: ManageAccountsController):
     """Handle creating a new account"""
 
     if not current_account.has_permission(Permissions.CREATE_ACCOUNT):
@@ -85,15 +97,37 @@ def create_new_account(current_account: Account, controller):
         return
     
     password = make_password(password)
+
+    role_registry = controller.get_role_registry()
+
+    assignable_roles = [
+        (role_name, role_cls())
+        for role_name, role_cls in role_registry.items()
+        if role_cls().level < current_account.role.level
+    ]
+
+    role_options = sort_role_by_level([role_instance.name for _, role_instance in assignable_roles], controller)
+    label_to_role_name = {role_instance.name: role_name for role_name, role_instance in assignable_roles}
+
+    choice_manager = UserChoiceManager(
+        options = role_options,
+        prompt = colored(f"<== Change Role for {username} ==>", "cyan", attrs=["bold"])
+    )
     
-    role = input("Enter role for the new account: ").strip()
-    if not role:
+    new_role = choice_manager.get_user_choice().label()
+    if not new_role:
         print(colored("Role cannot be empty.", "red"))
         enter_to_continue()
         return
-    
-    result = controller.create_account(username=username, password=password, role_name=role)
-    
+
+    role_name = label_to_role_name.get(new_role)
+    if not role_name:
+        print(colored("Invalid role selected.", "red"))
+        enter_to_continue()
+        return
+
+    result = controller.create_account(username=username, password=password, role_name=role_name)
+
     if result.get("status"):
         print(colored(result.get("message"), "green"))
         AuditLogController().add_log(
@@ -126,12 +160,13 @@ def manage_single_account(current_account: Account, selected_account: dict, cont
             return
         
         account_data = all_accounts[username]
+        role_name = controller.get_role_from_registry(account_data.get("role")).name if controller.get_role_from_registry(account_data.get("role")) else "Unknown"
         
         prompts = [
             colored(f"<== Managing Account: {username} ==>", "cyan", attrs=["bold"]),
             "",
             colored(f"Username:", "cyan", attrs=["bold"]) + colored(f" {username}", "white"),
-            colored(f"Role:", "cyan", attrs=["bold"]) + colored(f" {account_data.get('role', 'Unknown')}", "white"),
+            colored(f"Role:", "cyan", attrs=["bold"]) + colored(f" {role_name}", "white"),
             ""
         ]
         
@@ -223,20 +258,40 @@ def change_account_password(username: str, current_account: Account, controller)
     
     enter_to_continue()
 
-def change_account_role(username: str, current_account: Account, controller):
+def change_account_role(username: str, current_account: Account, controller: ManageAccountsController):
     """Handle changing account role"""
+
     clear_console()
     print(colored(f"<== Change Role for {username} ==>", "cyan", attrs=["bold"]))
     print()
+
+    role_registry = controller.get_role_registry()
+
+    assignable_roles = [
+        (role_name, role_cls())
+        for role_name, role_cls in role_registry.items()
+        if role_cls().level < current_account.role.level
+    ]
+
+    role_options = sort_role_by_level([role_instance.name for _, role_instance in assignable_roles], controller)
+
+    label_to_role_name = {role_instance.name: role_name for role_name, role_instance in assignable_roles}
+
+    choice_manager = UserChoiceManager(
+        options = role_options,
+        prompt = colored(f"<== Change Role for {username} ==>", "cyan", attrs=["bold"])
+    )
     
-    new_role = input("Enter new role: ").strip()
+    new_role = choice_manager.get_user_choice().label()
     if not new_role:
         print(colored("Role cannot be empty.", "red"))
         enter_to_continue()
         return
     
-    result = controller.update_account(username=username, role_name=new_role)
-    
+    role_name = label_to_role_name.get(new_role)
+
+    result = controller.update_account(username=username, role_name=role_name)
+
     if result.get("status"):
         print(colored(result.get("message"), "green"))
         AuditLogController().add_log(

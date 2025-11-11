@@ -31,6 +31,9 @@ class ManageAccountsController:
         with open(self.DATA_FILE, "w", encoding="utf-8") as file:
             json.dump({"accounts": self.accounts}, file, indent=4)
 
+    def get_role_from_registry(self, role_name: str) -> Role | None:
+        return self.account_manager.get_role_from_registry(role_name)
+
     def get_role_registry(self) -> dict[str, Role]:
         return self.account_manager._role_registry
 
@@ -44,8 +47,7 @@ class ManageAccountsController:
         if not role_class:
             return None
         
-        role_instance = role_class()
-        return role_instance.level
+        return role_class.level
 
     # ---------------
     # CRUD Operations
