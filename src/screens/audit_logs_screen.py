@@ -26,7 +26,6 @@ def audit_logs_screen(current_account: Account, account_manager: AccountManager)
         for log_id, log_data in controller.get_all_logs().items():
             logs.append(
                 {
-                    "id": log_id,
                     "action": log_data["action"],
                     "performed_by": log_data["performed_by"],
                     "application_name": log_data["application_name"],
@@ -45,7 +44,6 @@ def audit_logs_screen(current_account: Account, account_manager: AccountManager)
         audit_logs = get_audit_logs()
 
         columns = {
-            "id": "Log ID",
             "action": "Action",
             "performed_by": "User",
             "application_name": "Application",
