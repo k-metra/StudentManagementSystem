@@ -108,7 +108,7 @@ def create_new_account(current_account: Account, controller):
     
     enter_to_continue()
 
-def manage_single_account(current_account: Account, selected_account: dict, controller):
+def manage_single_account(current_account: Account, selected_account: dict, controller: ManageAccountsController):
     """Handle managing a single account"""
     choice_manager = UserChoiceManager()
     username = selected_account["username"]
@@ -141,14 +141,19 @@ def manage_single_account(current_account: Account, selected_account: dict, cont
 
         options = []
 
-        if current_account.has_permission(Permissions.EDIT_ACCOUNT):
-            options.extend([
-                "Change Password",
-                "Change Role",
-            ])
+        # If the current user is not managing their own account and has a higher role level
 
-        if current_account.has_permission(Permissions.DELETE_ACCOUNT):
-            options.append("Delete Account")
+        target_role_level: int | None = controller.get_account_role_level(username) or 0
+
+        if current_account.username != username and current_account.role.level > target_role_level:
+            if current_account.has_permission(Permissions.EDIT_ACCOUNT):
+                options.extend([
+                    "Change Password",
+                    "Change Role",
+                ])
+
+            if current_account.has_permission(Permissions.DELETE_ACCOUNT):
+                options.append("Delete Account")
 
         options.append("Back to Account List")
         choice_manager.set_options(options)
