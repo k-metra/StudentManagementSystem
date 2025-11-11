@@ -4,6 +4,8 @@ from classes import Account
 from classes.AccountManager import AccountManager
 import json
 
+from utils.passwords import make_password
+
 class SettingsController:
 
     def __init__(self, current_account: Account, account_manager: AccountManager):
@@ -22,7 +24,7 @@ class SettingsController:
         if self.current_account.username not in accounts:
             return {"status": False, "error": "Current account does not exist."}
         
-        accounts[self.current_account.username]["password"] = new_password
+        accounts[self.current_account.username]["password"] = make_password(new_password)
 
         try:
             with open(self.DATA_FILE, "w", encoding="utf-8") as file:

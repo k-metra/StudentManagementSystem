@@ -8,6 +8,8 @@ from controllers import SettingsController
 from utils.misc import enter_to_continue
 import pwinput
 
+from utils.passwords import check_password, make_password
+
 def settings_screen(current_account: Account, choice_manager: UserChoiceManager, account_manager: AccountManager) -> None:
     clear_console()
 
@@ -40,7 +42,8 @@ def settings_screen(current_account: Account, choice_manager: UserChoiceManager,
             case "Change Password":
                 clear_console()
                 current_password = pwinput.pwinput("Enter current password: ")
-                if current_account.password != current_password:
+
+                if not check_password(plain_text_password=current_password, hashed_password=current_account.password):
                     print(colored("Incorrect password.", "red"))
                     enter_to_continue()
                     continue
