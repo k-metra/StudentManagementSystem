@@ -55,7 +55,7 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
                 'home_address': str(row[header_indices.get('home_address', '')] or '').strip(),
                 'email_address': str(row[header_indices.get('email_address', '')] or '').strip(),
                 'guardian_name': str(row[header_indices.get('guardian_name', '')] or '').strip(),
-                'guardian_contact': str(row[header_indices.get('guardian_contact', '')] or '').strip(),
+                'guardian_contact': format_phone(str(row[header_indices.get('guardian_contact', '')] or '').strip()),
                 'department': row_department or 'Undeclared',
             }
 
