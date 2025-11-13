@@ -1,5 +1,5 @@
 # StudentManagementSystem
-TBA
+Group 4 Project for Fundamentals of Programming, 11 November 2025
 
 ## License
 
