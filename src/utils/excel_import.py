@@ -1,3 +1,4 @@
+import json
 from openpyxl import load_workbook
 from termcolor import colored 
 from utils.misc import enter_to_continue
@@ -14,8 +15,11 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
         headers = [str(cell.value).strip() for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
         required_fields = {
             'student_id', 'first_name', 'last_name', 'year_level', 'phone_number', 'course', 'home_address',
-            'email_address', 'guardian_name', 'guardian_contact', 'department'
+            'email_address', 'guardian_name', 'guardian_contact'
         }
+
+        data = json.load(open("src/data/departments.json", "r"))
+        departments = data.get("departments", {})
 
         missing = required_fields - set(headers)
 
@@ -31,6 +35,13 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
 
             if not student_id:
                 continue
+
+            row_department = None
+
+            for department, courses in departments.items():
+                if str(row[header_indices.get('course', '')] or '').strip() in courses:
+                    row_department = department
+                    break
             
             students[student_id] = {
                 'first_name': str(row[header_indices.get('first_name', '')] or '').strip(),
@@ -42,11 +53,10 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
                 'email_address': str(row[header_indices.get('email_address', '')] or '').strip(),
                 'guardian_name': str(row[header_indices.get('guardian_name', '')] or '').strip(),
                 'guardian_contact': str(row[header_indices.get('guardian_contact', '')] or '').strip(),
-                'department': str(row[header_indices.get('department', '')] or '').strip()
+                'department': row_department or 'Undeclared',
             }
 
         print(colored(f"Successfully imported {len(students)} student records from '{file_path}'.", "green"))
-        enter_to_continue()
         return students
     
     except FileNotFoundError:
