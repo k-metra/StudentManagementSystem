@@ -6,4 +6,4 @@ class Staff(Role):
         super().__init__(permissions=[
             Permissions.ADD_STUDENT,
             Permissions.EDIT_STUDENT,
-        ], level=6)
+        ], level=5)

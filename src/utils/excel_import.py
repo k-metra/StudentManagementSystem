@@ -2,6 +2,7 @@ import json
 from openpyxl import load_workbook
 from termcolor import colored 
 from utils.misc import enter_to_continue
+from utils.regex import format_phone
 
 def import_students_from_excel(file_path: str) -> dict[str, dict]:
 
@@ -43,11 +44,13 @@ def import_students_from_excel(file_path: str) -> dict[str, dict]:
                     row_department = department
                     break
             
+
+            
             students[student_id] = {
                 'first_name': str(row[header_indices.get('first_name', '')] or '').strip(),
                 'last_name': str(row[header_indices.get('last_name', '')] or '').strip(),
                 'year_level': str(row[header_indices.get('year_level', '')] or "1").strip(),
-                'phone_number': str(row[header_indices.get('phone_number', '')] or '').strip(),
+                'phone_number': format_phone(str(row[header_indices.get('phone_number', '')] or '').strip()),
                 'course': str(row[header_indices.get('course', '')] or '').strip(),
                 'home_address': str(row[header_indices.get('home_address', '')] or '').strip(),
                 'email_address': str(row[header_indices.get('email_address', '')] or '').strip(),
